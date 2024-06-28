@@ -9,6 +9,9 @@ We propose a video-based virtual visit with an AI real estate agent to present t
 We aim to reduce physical visit by 70%, at the cost of 1/5th of the current virtual visit solutions.
 
 # Presentation
+[![Google Slides Presentation](./slide-thumbnail.png)]([https://docs.google.com/presentation/d/e/2PACX-1vQvC23W4Vzbg8eF4FqkFg5Hy4N0a5Wb8C8_kD_QBQ5YtT9gGp5LPho/view](https://docs.google.com/presentation/d/1swGu0L1i43S4k53mwIBRJWb2yOD22bKvmDuUPg5wZIA/edit?usp=sharing))
 
-https://docs.google.com/presentation/d/1swGu0L1i43S4k53mwIBRJWb2yOD22bKvmDuUPg5wZIA/edit?usp=sharing
+# Demo
+WIP
+
 
