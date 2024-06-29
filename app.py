@@ -30,10 +30,16 @@ if "view_idx" not in st.session_state:
 media, chat = st.columns([2, 1])
 with media:
     views = db.get_views_by_property_id(selected_property['id'])
+
+    def update_view_idx():
+        st.session_state.view_idx = st.session_state.view_idx_select
+
     view_idx = st.selectbox('Select a room to visit', 
                     range(len(views)),
+                    key='view_idx_select',
                     index=st.session_state.view_idx,
-                    format_func=lambda x: views[x]['name'])
+                    format_func=lambda x: views[x]['name'], 
+                    on_change=update_view_idx)
     
     left, right = st.columns([1, 1])
     with left:
