@@ -160,11 +160,86 @@ DATA = [
                 "id": 4,
                 "name": "Living Room",
                 "video": "https://firebasestorage.googleapis.com/v0/b/hackathon-lablab.appspot.com/o/IMG_1910.MOV?alt=media&token=4ffd6c33-41d0-47cd-9307-01be576fb302",
+                "qa": [
+                    {
+                        "question": "What is the surface of the living room?",
+                        "answer": "The surface is 23.64m2"
+                    },
+                    {
+                        "question": "Is the floor real wood?",
+                        "answer": "Yes it is real parquet"
+                    },
+                    {
+                        "question": "Is this connected to optical fiber?",
+                        "answer": "Yes, the connection is close to the windows"
+                    },
+                    {
+                        "question": "What is the orientation of the living room?",
+                        "answer": "The living room's window is facing west"
+                    },
+                    {
+                        "question": "Was the walls repainted recently?",
+                        "answer": "The wall was repainted last year in 2023."
+                    },
+                    {
+                        "time": "00:00:49.000",
+                        "question": "What is this big courtyard?",
+                        "answer": "This is an elementary school. It is very quiet during the weekend and holidays."
+                },
+                    { 
+                        "question": "Is the windows double glazing?",
+                        "answer": "Yes, the windows are double glazing"
+                    },
+                    {
+                        "question": "Is the windows blind manual or automatic?",
+                        "answer": "The blinds are automatic"
+                    },
+                    {
+                        "question": "What is the heating type?",
+                        "answer": "The heating is electric"
+                    }
+                ]
             },
             {
                 "id": 5,
                 "name": "Kitchen, Bath Room & WC",
                 "video": "https://firebasestorage.googleapis.com/v0/b/hackathon-lablab.appspot.com/o/IMG_1911.MOV?alt=media&token=ff2cd027-19fe-4866-9964-b40751f536f2",
+                "qa": [
+                    {
+                        "question": "What is the surface of the kitchen?",
+                        "answer": "The surface is 3.83m2"
+                    },
+                    {
+                        "question": "What is the surface of the bathroom & WC?",
+                        "answer": "The surface is 3.22m2"
+                    },
+                    {
+                        "question": "Is the kitchen equipped?",
+                        "answer": """Yes, the kitchen is equipped with a fridge, a stove, a microwave, induction hob,
+                        a sink and a washing machine."""
+                    },
+                    {
+                        "question": "Was the kitchen renovated recently?",
+                        "answer": "The kitchen was renovated in 2023"
+                    },
+                    {
+                        "question" : "Is the kitchen floor real wood?",
+                        "answer": "No, the floor is PVC with wood pattern, it is easy to clean and maintain",
+                    },
+                    {
+                        "question": "Is the bathroom equipped?",
+                        "answer": "Yes, the bathroom is equipped with a bath, a sink and a WC"
+                    },
+                    {
+                        "question": "What is the bathroom floor type?",
+                        "answer": "The floor is tiled"
+                    },
+                    {
+                        "time": "00:01:19.000",
+                        "question": "What is this?",
+                        "answer": "This is the hot water tank, the hot water is electric"
+                    },
+                ]
             },
         ],
     },
