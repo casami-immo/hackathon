@@ -2,44 +2,186 @@ import requests
 import io
 import pathlib
 
+
 def load_subtitle(link):
     response = requests.get(link)
     return response.text
 
-TEST_DATA_PATH = pathlib.Path(__file__).parent.joinpath('test_data')
+
+TEST_DATA_PATH = pathlib.Path(__file__).parent.joinpath("test_data")
 
 DATA = [
-    {'id': 0, 'name': 'Test Property', 'views': [
-        {'id': 1, 
-         'name': 'Outside', 
-         'video': 'https://firebasestorage.googleapis.com/v0/b/hackathon-lablab.appspot.com/o/IMG_1906.MOV?alt=media&token=feb01f28-9ca5-4211-b2de-f9003e9c6524',
-         'subtitles': TEST_DATA_PATH.joinpath('IMG_1906.srt')},
-        {'id': 2,
-        'name': 'Building Entry',
-        'video': 'https://firebasestorage.googleapis.com/v0/b/hackathon-lablab.appspot.com/o/IMG_1907.MOV?alt=media&token=90a9982c-8d66-4795-9a32-8a736aceb6cb',
-        'subtitles': TEST_DATA_PATH.joinpath('IMG_1907.srt')
+    {
+        "id": 0,
+        "name": "Test Property",
+        "address": "20 rue Raspail, 92300 Levallois-Perret",
+        "lot_number": "0039",
+        "floor": "5",
+        "surface(m2)": "34.67",
+        "taxe_fonciere": "951",
+        "condo_fees(annual)": "536",
+        "diagnostics": {
+            "carrez": {
+                    "total": "34.67",
+                    "date": "2008-05-21",
+                    "rooms": [
+                        {
+                            "name": "Hall",
+                            "surface": "3.22"
+                        },
+                        {
+                            "name": "Kitchen",
+                            "surface": "3.83"
+                        },
+                        {
+                            "name": "Bathroom & WC",
+                            "surface": "3.22"
+                        },
+                        {
+                            "name": "Living Room",
+                            "surface": "23.64"
+                        }
+                            ]
+                      },
+            "dpe": {
+                    "energy_category": "D",
+                    "energy_consumption(kWh/m2/yr)": "212",
+                    "emission(kgCO2/m2/yr)": "6",
+                    "emission_category": "B",
+                    "date": "2022-03-21",
+                    "expiring_date": "2023-03-21",
+                    "details": {
+                        "heating": "electric",
+                        "hot_water": "electric",
+                        "air_conditioning": "no",
+                        "ventilation": "natural",
+                        "windows": "double glazing",
+                    },
+                  },
+            "asbestos": {
+                    "date": "2000-06-07",
+                    "presence": "no",
+                  },
+            "electricity": {
+                    "date": "2000-06-07",
+                    "conform": "no",
+                  },
+        },
+        "views": [
+            {
+                "id": 1,
+                "name": "Outside",
+                "video": "https://firebasestorage.googleapis.com/v0/b/hackathon-lablab.appspot.com/o/IMG_1906.MOV?alt=media&token=feb01f28-9ca5-4211-b2de-f9003e9c6524",
+                "subtitles": TEST_DATA_PATH.joinpath("IMG_1906.srt"),
+                "qa":[
+                    {
+                        "question": "Year of construction?",
+                        "answer": "90s"
+                    },
+                    {
+                        "question": "How many floors does the building have?",
+                        "answer": "The building has 6 floors"
+                    },
+                    {
+                        "question": "Is it close to public transport?",
+                        "answer": "The L trains is 5 minutes away and the metro 3 is 12 minutes away. You can reach LaDefense or Saint Lazare in 20minutes"
+                    },
+                    {
+                        "question": "Is there a parking space?",
+                        "answer": "Yes, there is a parking space"
+                    },
+                    {
+                        "question": "Where is the address?",
+                        "answer": "The adress is 20 rue Raspail"
+                    },
+                    {
+                        "question": "What are the commidity around?",
+                        "answer": """The place Jean Zay is 2 minutes away with many restaurants and a fresh product market. You also have the community swimming pool next to the building.
+                        The city hall and post office are 10 minutes away, and a bit further there is the SoOuest shopping center and the cinema. 
+                        """
+                    },
+                ]
             },
-        {'id': 3,
-        'name': 'Appartment Entry',
-        'video': 'https://firebasestorage.googleapis.com/v0/b/hackathon-lablab.appspot.com/o/IMG_1909.MOV?alt=media&token=c93d0dc2-77e8-427e-92fd-04e7aa8303b1'},
-        {'id': 4,
-        'name': 'Living Room',
-        'video': 'https://firebasestorage.googleapis.com/v0/b/hackathon-lablab.appspot.com/o/IMG_1910.MOV?alt=media&token=4ffd6c33-41d0-47cd-9307-01be576fb302'},
-        {'id': 5,
-        'name': 'Kitchen, Bath Room & WC',
-        'video': 'https://firebasestorage.googleapis.com/v0/b/hackathon-lablab.appspot.com/o/IMG_1911.MOV?alt=media&token=ff2cd027-19fe-4866-9964-b40751f536f2'},
-    ]},
+            {
+                "id": 2,
+                "name": "Building Entry",
+                "video": "https://firebasestorage.googleapis.com/v0/b/hackathon-lablab.appspot.com/o/IMG_1907.MOV?alt=media&token=90a9982c-8d66-4795-9a32-8a736aceb6cb",
+                "subtitles": TEST_DATA_PATH.joinpath("IMG_1907.srt"),
+                "qa": [
+                    {
+                        "question": "How is the building secured?",
+                        "answer": "There is a digicode and interphone"
+                    },
+                    {
+                        "time": "00:00:13.000",
+                        "question": "What is this door?",
+                        "answer": "This is the recycling room, you can put your recycling here"
+                    },
+                    {
+                        "question": "Is there a concierge?",
+                        "answer": "No"
+                    },
+                    {
+                        "question": "Are there 2 elevators?",
+                        "answer": "Yes, the building is actually a twin building with 2 parts. Each part has its own elevator"
+                    },
+                    {
+                        "question": "Is the garden accessible?",
+                        "answer": "No, the garden is not accessible by the residents."
+                    },
+                    {
+                        "time": "00:00:41.000",
+                        "question": "What is this area?",
+                        "answer": "This is a part of the building for commercial used. It is owned by a company. They just bought the place and renovating it to make an office space."
+                    },
+                    {
+                        "time": "00:00:38.000",
+                        "question": "What are those doors?",
+                        "answer": "The 2 doors next to the elevators are the stairscase. One go to the cellar and parking and the other go up to the appartments."
+                    },
+                ]
+            },
+            {
+                "id": 3,
+                "name": "Appartment Entry",
+                "video": "https://firebasestorage.googleapis.com/v0/b/hackathon-lablab.appspot.com/o/IMG_1909.MOV?alt=media&token=c93d0dc2-77e8-427e-92fd-04e7aa8303b1",
+                "qa": [
+                    {
+                        "question": "Whivh floor is the appartment?",
+                        "answer": "It is at the 5th floors"
+                    },
+                    {
+                        "question": "How many appartments are on this floor?",
+                        "answer": "There are 4 appartments on this floor"
+                    },
+                ]
+            },
+            {
+                "id": 4,
+                "name": "Living Room",
+                "video": "https://firebasestorage.googleapis.com/v0/b/hackathon-lablab.appspot.com/o/IMG_1910.MOV?alt=media&token=4ffd6c33-41d0-47cd-9307-01be576fb302",
+            },
+            {
+                "id": 5,
+                "name": "Kitchen, Bath Room & WC",
+                "video": "https://firebasestorage.googleapis.com/v0/b/hackathon-lablab.appspot.com/o/IMG_1911.MOV?alt=media&token=ff2cd027-19fe-4866-9964-b40751f536f2",
+            },
+        ],
+    },
 ]
+
 
 def get_properties():
     return DATA
 
+
 def get_property_by_id(id: int):
     for property in DATA:
-        if property['id'] == id:
+        if property["id"] == id:
             return property
     return None
 
+
 def get_views_by_property_id(property_id: int):
     property = get_property_by_id(property_id)
-    return property['views']
+    return property["views"]
