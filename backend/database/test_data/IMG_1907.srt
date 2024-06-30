@@ -1,0 +1,19 @@
+1
+00:00:00,000 --> 00:00:06,000
+Traversons les portes vitrées sécurisées de cet immeuble. 
+
+2
+00:00:06,000 --> 00:00:12,000
+L’entrée est accueillante avec des boîtes aux lettres individuelles.
+
+3
+00:00:12,000 --> 00:00:24,000
+Une seconde porte sécurisée s’ouvre sur des parties communes lumineuses et entretenues avec un accès à une cour intérieure. 
+
+4
+00:00:24,000 --> 00:00:39,000
+Un couloir spacieux dessert les appartements. 
+
+5
+00:00:39,000 --> 00:01:01,000
+Nous arrivons maintenant à l’ascenseur, prêt à vous emmener à l’étage.

@@ -53,8 +53,9 @@ with media:
                 st.session_state.view_idx += 1
                 st.rerun()
         
-            
-    st.video(views[st.session_state.view_idx]['video'])
+    current_view = views[st.session_state.view_idx]
+    st.video(data=current_view['video'], 
+            subtitles=current_view.get('subtitles', None),)
 
 # with chat:
 #     for message in st.session_state.messages:

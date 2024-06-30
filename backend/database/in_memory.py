@@ -1,11 +1,24 @@
+import requests
+import io
+import pathlib
+
+def load_subtitle(link):
+    response = requests.get(link)
+    return response.text
+
+TEST_DATA_PATH = pathlib.Path(__file__).parent.joinpath('test_data')
+
 DATA = [
     {'id': 0, 'name': 'Test Property', 'views': [
         {'id': 1, 
          'name': 'Outside', 
-         'video': 'https://firebasestorage.googleapis.com/v0/b/hackathon-lablab.appspot.com/o/IMG_1906.MOV?alt=media&token=feb01f28-9ca5-4211-b2de-f9003e9c6524'},
+         'video': 'https://firebasestorage.googleapis.com/v0/b/hackathon-lablab.appspot.com/o/IMG_1906.MOV?alt=media&token=feb01f28-9ca5-4211-b2de-f9003e9c6524',
+         'subtitles': TEST_DATA_PATH.joinpath('IMG_1906.srt')},
         {'id': 2,
         'name': 'Building Entry',
-        'video': 'https://firebasestorage.googleapis.com/v0/b/hackathon-lablab.appspot.com/o/IMG_1907.MOV?alt=media&token=90a9982c-8d66-4795-9a32-8a736aceb6cb'},
+        'video': 'https://firebasestorage.googleapis.com/v0/b/hackathon-lablab.appspot.com/o/IMG_1907.MOV?alt=media&token=90a9982c-8d66-4795-9a32-8a736aceb6cb',
+        'subtitles': TEST_DATA_PATH.joinpath('IMG_1907.srt')
+            },
         {'id': 3,
         'name': 'Appartment Entry',
         'video': 'https://firebasestorage.googleapis.com/v0/b/hackathon-lablab.appspot.com/o/IMG_1909.MOV?alt=media&token=c93d0dc2-77e8-427e-92fd-04e7aa8303b1'},
