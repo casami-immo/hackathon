@@ -67,7 +67,7 @@ DATA = [
                     "conform": "no",
                   },
         },
-        "views": [
+        "areas": [
             {
                 "id": 1,
                 "name": "Outside",
@@ -257,6 +257,6 @@ def get_property_by_id(id: int):
     return None
 
 
-def get_views_by_property_id(property_id: int):
+def get_areas_by_property_id(property_id: int):
     property = get_property_by_id(property_id)
-    return property["views"]
+    return property["areas"]
