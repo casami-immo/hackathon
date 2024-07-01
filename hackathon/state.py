@@ -1,6 +1,7 @@
 import os
 import reflex as rx
 from openai import OpenAI
+from backend.database import in_memory as db
 
 
 # Checking if the API key is set properly
@@ -39,10 +40,10 @@ class State(rx.State):
     new_chat_name: str = ""
 
     # Current property id
-    current_property_id: str = ""
+    current_property_id: int = 0
 
     # Current video url
-    current_video_url: str = "https://firebasestorage.googleapis.com/v0/b/hackathon-lablab.appspot.com/o/IMG_1906.MOV?alt=media&token=feb01f28-9ca5-4211-b2de-f9003e9c6524"
+    current_area_idx: int = 0
 
     def create_chat(self):
         """Create a new chat."""
@@ -141,7 +142,44 @@ class State(rx.State):
         # Toggle the processing flag.
         self.processing = False
 
+
+    
+    @rx.var
+    def current_area(self) -> str:
+        """Get the current area name."""
+        areas = db.get_views_by_property_id(self.current_property_id)
+        return areas[self.current_area_idx]
+    
     @rx.var
     def video_url(self) -> str:
         """Get the current video URL."""
-        return self.current_video_url
+        return self.current_area["video"]
+    
+    @rx.var
+    def areas_names(self) -> list[str]:
+        """Get the list of areas."""
+        areas = db.get_views_by_property_id(self.current_property_id)
+        return [area["name"] for area in areas]
+    
+    @rx.var
+    def current_area_name(self) -> str:
+        """Get the current area name."""
+        return self.areas_names[self.current_area_idx]
+    
+    def next_area(self):
+        """Switch to the next area."""
+        if self.current_area_idx == len(self.areas_names) - 1:
+            self.current_area_idx = 0
+        else:
+            self.current_area_idx += 1
+
+    def previous_area(self):
+        """Switch to the previous area."""
+        if self.current_area_idx == 0:
+            self.current_area_idx = len(self.areas_names) - 1
+        else:
+            self.current_area_idx -= 1
+
+    def switch_area(self, area_name: str):
+        """Switch to a specific area."""
+        self.current_area_idx = self.areas_names.index(area_name)
