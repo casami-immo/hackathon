@@ -1,12 +1,9 @@
+from typing import List
+
 import os
 import reflex as rx
-from openai import OpenAI
 from backend.database import in_memory as db
-
-
-# Checking if the API key is set properly
-if not os.getenv("OPENAI_API_KEY"):
-    raise Exception("Please set OPENAI_API_KEY environment variable.")
+from backend.assistant import answer
 
 
 class QA(rx.Base):
@@ -20,134 +17,30 @@ DEFAULT_CHATS = {
     "Intros": [],
 }
 
-
 class State(rx.State):
     """The app state."""
 
-    # A dict from the chat name to the list of questions and answers.
-    chats: dict[str, list[QA]] = DEFAULT_CHATS
-
-    # The current chat name.
-    current_chat = "Intros"
-
-    # The current question.
-    question: str
-
-    # Whether we are processing the question.
-    processing: bool = False
-
-    # The name of the new chat.
-    new_chat_name: str = ""
-
-    # Current property id
+    # # Current property id
     current_property_id: int = 0
 
-    # Current video url
+    # Current area index
     current_area_idx: int = 0
 
-    def create_chat(self):
-        """Create a new chat."""
-        # Add the new chat to the list of chats.
-        self.current_chat = self.new_chat_name
-        self.chats[self.new_chat_name] = []
+    question: str
 
-    def delete_chat(self):
-        """Delete the current chat."""
-        del self.chats[self.current_chat]
-        if len(self.chats) == 0:
-            self.chats = DEFAULT_CHATS
-        self.current_chat = list(self.chats.keys())[0]
+    chat_history: List[QA] = []
 
-    def set_chat(self, chat_name: str):
-        """Set the name of the current chat.
-
-        Args:
-            chat_name: The name of the chat.
-        """
-        self.current_chat = chat_name
+    processing : bool = False
 
     @rx.var
-    def chat_titles(self) -> list[str]:
-        """Get the list of chat titles.
-
-        Returns:
-            The list of chat names.
-        """
-        return list(self.chats.keys())
-
-    async def process_question(self, form_data: dict[str, str]):
-        # Get the question from the form
-        question = form_data["question"]
-
-        # Check if the question is empty
-        if question == "":
-            return
-
-        model = self.openai_process_question
-
-        async for value in model(question):
-            yield value
-
-    async def openai_process_question(self, question: str):
-        """Get the response from the API.
-
-        Args:
-            form_data: A dict with the current question.
-        """
-
-        # Add the question to the list of questions.
-        qa = QA(question=question, answer="")
-        self.chats[self.current_chat].append(qa)
-
-        # Clear the input and start the processing.
-        self.processing = True
-        yield
-
-        # Build the messages.
-        messages = [
-            {
-                "role": "system",
-                "content": "You are a friendly chatbot named Reflex. Respond in markdown.",
-            }
-        ]
-        for qa in self.chats[self.current_chat]:
-            messages.append({"role": "user", "content": qa.question})
-            messages.append({"role": "assistant", "content": qa.answer})
-
-        # Remove the last mock answer.
-        messages = messages[:-1]
-
-        # Start a new session to answer the question.
-        session = OpenAI().chat.completions.create(
-            model=os.getenv("OPENAI_MODEL", "gpt-3.5-turbo"),
-            messages=messages,
-            stream=True,
-        )
-
-        # Stream the results, yielding after every word.
-        for item in session:
-            if hasattr(item.choices[0].delta, "content"):
-                answer_text = item.choices[0].delta.content
-                # Ensure answer_text is not None before concatenation
-                if answer_text is not None:
-                    self.chats[self.current_chat][-1].answer += answer_text
-                else:
-                    # Handle the case where answer_text is None, perhaps log it or assign a default value
-                    # For example, assigning an empty string if answer_text is None
-                    answer_text = ""
-                    self.chats[self.current_chat][-1].answer += answer_text
-                self.chats = self.chats
-                yield
-
-        # Toggle the processing flag.
-        self.processing = False
-
-
+    def current_property(self) -> dict:
+        """Get the current property."""
+        return self.current_property_id
     
     @rx.var
     def current_area(self) -> str:
         """Get the current area name."""
-        areas = db.get_views_by_property_id(self.current_property_id)
+        areas = db.get_areas_by_property_id(self.current_property_id)
         return areas[self.current_area_idx]
     
     @rx.var
@@ -158,7 +51,7 @@ class State(rx.State):
     @rx.var
     def areas_names(self) -> list[str]:
         """Get the list of areas."""
-        areas = db.get_views_by_property_id(self.current_property_id)
+        areas = db.get_areas_by_property_id(self.current_property_id)
         return [area["name"] for area in areas]
     
     @rx.var
@@ -183,3 +76,31 @@ class State(rx.State):
     def switch_area(self, area_name: str):
         """Switch to a specific area."""
         self.current_area_idx = self.areas_names.index(area_name)
+
+    async def process_question(self, form_data: dict[str, str]):
+        # Get the question from the form
+        question = form_data["question"]
+
+        # Check if the question is empty
+        if question == "":
+            return
+
+        # Clear the input and start the processing.
+        self.processing = True
+        yield
+
+        # Get the answer from the API
+        self.chat_history.append(QA(question=question, answer=""))
+        async for answer_text in answer(
+            question, self.chat_history, context={"property_id": self.current_property, "current_area": self.current_area_name}):
+            if answer_text is not None:
+                self.chat_history[-1].answer += answer_text
+            else:
+                # Handle the case where answer_text is None, perhaps log it or assign a default value
+                # For example, assigning an empty string if answer_text is None
+                answer_text = ""
+                self.chat_history[-1].answer += answer_text
+            yield
+        # Toggle the processing flag.
+        self.processing = False
+        yield
