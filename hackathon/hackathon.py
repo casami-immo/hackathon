@@ -2,7 +2,7 @@
 
 import reflex as rx
 from hackathon.components import chat, navbar, media, area_selector
-
+from hackathon.pages.new_property import new_property
 
 def index() -> rx.Component:
     """The main app."""
@@ -61,3 +61,4 @@ app = rx.App(
     ),
 )
 app.add_page(index)
+app.add_page(new_property, route="/new_property")

@@ -1,6 +1,7 @@
 import requests
 import io
 import pathlib
+from uuid import uuid4
 
 
 def load_subtitle(link):
@@ -15,9 +16,7 @@ DATA = [
         "id": 0,
         "name": "Test Property",
         "address": "20 rue Raspail, 92300 Levallois-Perret",
-        "lot_number": "0039",
         "floor": "5",
-        "surface(m2)": "34.67",
         "taxe_fonciere": "951",
         "condo_fees(annual)": "536",
         "diagnostics": {
@@ -248,6 +247,46 @@ DATA = [
 
 def get_properties():
     return DATA
+
+def new_property(property_data: dict):
+    property_data["id"] = str(uuid4())
+    property_data["areas"] = []
+    property_data["name"] = property_data["address"]
+    DATA.append(property_data)
+    return property_data["id"]
+
+def delete_property(property_id: int):
+    for i, property in enumerate(DATA):
+        if property["id"] == property_id:
+            return DATA.pop(i)
+    return None
+
+def update_property(property_id: int, property_data: dict):
+    for i, property in enumerate(DATA):
+        if property["id"] == property_id:
+            DATA[i] = property_data
+            return property_data
+    return None
+
+def new_area(property_id: int, area_data: dict):
+    property = get_property_by_id(property_id)
+    property["areas"].append(area_data)
+    return area_data
+
+def update_area(property_id: int, area_id: int, area_data: dict):
+    property = get_property_by_id(property_id)
+    for i, area in enumerate(property["areas"]):
+        if area["id"] == area_id:
+            property["areas"][i] = area_data
+            return area_data
+    return None
+
+def delete_area(property_id: int, area_id: int):
+    property = get_property_by_id(property_id)
+    for i, area in enumerate(property["areas"]):
+        if area["id"] == area_id:
+            return property["areas"].pop(i)
+    return None
 
 
 def get_property_by_id(id: int):
