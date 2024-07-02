@@ -25,5 +25,5 @@ app = rx.App(
     ),
 )
 app.add_page(index)
-# app.add_page(new_property, route="/new_property")
+app.add_page(new_property, route="/new_property")
 app.add_page(visit, route="/visit/[property_id]")

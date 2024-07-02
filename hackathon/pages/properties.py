@@ -29,5 +29,6 @@ def properties() -> rx.Component:
     """List the properties."""
     return rx.chakra.vstack(
         rx.chakra.heading("Properties", size="2xl", padding="4px"), 
+        rx.chakra.button("New Property", on_click=rx.redirect("/new_property")),
         rx.foreach(PageState.list_properties, property_item),  
     )
