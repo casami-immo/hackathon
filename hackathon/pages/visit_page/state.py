@@ -1,5 +1,5 @@
 import reflex as rx
-from backend.database import in_memory as db
+from backend.database import db
 from backend.assistant import answer
 from typing import List
 
@@ -47,7 +47,7 @@ class VisitState(rx.State):
     def current_area(self) -> str:
         """Get the current area name."""
         try:
-            areas = db.get_areas_by_property_id(self.current_property_id)
+            areas = db.list_areas(self.current_property_id)
             return areas[self.current_area_idx]
         except:
             return None
@@ -56,7 +56,7 @@ class VisitState(rx.State):
     def video_url(self) -> str:
         """Get the current video URL."""
         try:
-            return self.current_area["video"]
+            return self.current_area.video_url
         except:
             return ""
 
@@ -64,8 +64,8 @@ class VisitState(rx.State):
     def areas_names(self) -> list[str]:
         """Get the list of areas."""
         try:
-            areas = db.get_areas_by_property_id(self.current_property_id)
-            return [area["name"] for area in areas]
+            areas = db.list_areas(self.current_property_id)
+            return [area.name for area in areas]
         except:
             return []
 

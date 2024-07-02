@@ -1,7 +1,7 @@
 import reflex as rx
 from hackathon.components.layout import apply_layout
-from backend.database import in_memory as db
-
+from backend.database import db
+from backend.models import Area
 
 class AreaState(rx.State):
     """The app state."""
@@ -31,13 +31,13 @@ class AreaState(rx.State):
 
     def create_area(self, form_data: dict):
         """Create a new area."""
-        db.new_area(
+        db.add_area(
             property_id=self.router.page.params["property_id"],
-            area_data=dict(
-                property_id=self.router.page.params["property_id"],
+            area=Area(
                 name=form_data["name"],
-                desc=form_data["desc"],
-                video=self.video,
+                description=form_data["desc"],
+                video_url=self.video,
+                qa=[],
             )
         )
         return rx.redirect(f"/properties/{self.router.page.params['property_id']}/edit")
