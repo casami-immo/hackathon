@@ -12,32 +12,12 @@ def navbar():
                 #     State.current_chat,
                 #     rx.tooltip(rx.icon("info", size=14), content="The current selected chat."),
                 #     variant="soft"
-                #     )
+                #     ) 
                 # ),
                 align_items="center",
             ),
-            # rx.hstack(
-            #     modal(rx.button("+ New chat")),
-            #     sidebar(
-            #         rx.button(
-            #             rx.icon(
-            #                 tag="messages-square",
-            #                 color=rx.color("mauve", 12),
-            #             ),
-            #             background_color=rx.color("mauve", 6),
-            #         )
-            #     ),
-            #     rx.desktop_only(
-            #         rx.button(
-            #             rx.icon(
-            #                 tag="sliders-horizontal",
-            #                 color=rx.color("mauve", 12),
-            #             ),
-            #             background_color=rx.color("mauve", 6),
-            #         )
-            #     ),
-            #     align_items="center",
-            # ),
+            # Link to the home page.
+            rx.link("Home", on_click=rx.redirect("/"), variant="soft", padding="12px"),
             justify_content="space-between",
             align_items="center",
         ),
