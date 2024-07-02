@@ -5,6 +5,12 @@ from uuid import uuid4
 import reflex as rx
 
 
+class File(rx.Base):
+    id: str = str(uuid4())
+    filename: str
+    url: str
+
+
 class QA(rx.Base):
     question: str
     answer: str
@@ -13,7 +19,7 @@ class Area(rx.Base):
     id: str = str(uuid4())
     name: str
     description: str
-    video_url: str
+    video: File
     qa : List[QA]
 
 class CarrezArea(rx.Base):
@@ -72,7 +78,3 @@ class Property(rx.Base):
     areas: Dict[str, Area] = {}
 
 
-class File(rx.Base):
-    id: str = str(uuid4())
-    filename: str
-    url: str

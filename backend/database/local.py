@@ -7,13 +7,14 @@ from uuid import uuid4
 import reflex as rx
 from typing import Dict
 
-from backend.models import Area, List, Property
+from backend.models import Area, List, Property, File
 
 from .base import BaseDB
 
 
 class DataBase(rx.Base):
     properties: Dict[str, Property] = {}
+    files: Dict[str, File] = {}
 
 
 class LocalDB(BaseDB):
@@ -81,26 +82,31 @@ class LocalDB(BaseDB):
     def delete_area(self, property_id: str, id: str):
         self.data["properties"][property_id]["areas"].pop(id)
         self._save_data()
-        
+
     def update_area(self, property_id: str, id: str, area: Area):
         data_dict = area.dict()
         data_dict["id"] = id
         self.data["properties"][property_id]["areas"][id] = data_dict
         self._save_data()
 
-    def get_file_url(self, property_id: str, file_id: str) -> str:
-        filename = self.data["properties"][property_id]["files"][file_id]
-        return f"http://localhost:8000/_upload/{property_id}/{filename}"
+    def get_file(self, file_id: str) -> File:
+        return File(**self.data["files"][file_id])
 
-    def add_file(self, property_id: str, filename: str, content: bytes) -> str:
+    def add_file(self, filename: str, content: bytes) -> str:
         file_id = str(uuid4())
-        with open(f"{self.filedir}/{property_id}/{filename}", "wb") as f:
+        with open(f"{self.filedir}/{filename}", "wb") as f:
             f.write(content)
-        self.data["properties"][property_id]["files"][file_id] = filename
+        self.data["files"][file_id] = File(
+            id=file_id,
+            filename=filename,
+            url="http://localhost:8000/_upload/" + filename,
+        ).dict()
+        return file_id
     
-    def list_files(self, property_id: str) -> List[str]:
-        return [filename for filename in self.data["properties"][property_id]["files"].values()]
+    def list_files(self) -> List[File]:
+        return [File(**v) for v in self.data["files"].values()]
     
-    def delete_file(self, property_id: str, file_id: str):
-        filename = self.data["properties"][property_id]["files"].pop(file_id)
-        os.remove(f"{self.filedir}/{property_id}/{filename}")
+    def delete_file(self, file_id: str):
+        os.remove(f"{self.filedir}/{self.data['files'][file_id]['filename']}")
+        self.data["files"].pop(file_id)
+        self._save_data()

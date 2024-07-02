@@ -51,24 +51,29 @@ class BaseDB(ABC):
         "Update area by id"
         pass
 
+    @abstractmethod
+    def delete_area(self, property_id: str, id: str):
+        "Delete area by id"
+        pass
+
     # CRUD operations for files
     @abstractmethod
-    def add_file(self, property_id: str, filename: str, content: bytes) -> str:
+    def add_file(self, filename: str, content: bytes) -> str:
         "Add file, return the ID"
         pass
 
     @abstractmethod
-    def list_files(self, property_id: str) -> List[str]:
+    def list_files(self) -> List[File]:
         "Return list of files for a property"
         pass
 
     @abstractmethod
-    def get_file_url(self, property_id: str, file_id: str) -> str:
+    def get_file(self, file_id: str) -> File:
         "Return a URL where the file can be downloaded"
         pass
 
     @abstractmethod
-    def delete_file(self, property_id: str, file_id: str):
+    def delete_file(self, file_id: str):
         "Delete file by id"
         pass
                     

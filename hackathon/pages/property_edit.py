@@ -48,7 +48,7 @@ def area_item(area: Area) -> rx.Component:
     return rx.chakra.vstack(
         rx.chakra.heading(area.name, size="xl", padding="4px"),
         rx.box(
-            rx.video(url=area.video_url, width="300px", height="300px"),
+            rx.video(url=area.video.url, width="300px", height="300px"),
         ),
         rx.chakra.button("Delete", on_click=PropEditState.delete_area(area.id)),
         padding="lg",

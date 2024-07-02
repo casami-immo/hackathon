@@ -56,7 +56,7 @@ class VisitState(rx.State):
     def video_url(self) -> str:
         """Get the current video URL."""
         try:
-            return self.current_area.video_url
+            return self.current_area.video.url
         except:
             return ""
 
