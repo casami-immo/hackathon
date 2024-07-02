@@ -1,7 +1,7 @@
 import reflex as rx
 
 from hackathon.components import loading_icon
-from hackathon.state import QA, State
+from hackathon.pages.visit_page.state import QA, VisitState
 
 
 message_style = dict(display="inline-block", padding="1em", border_radius="8px", max_width=["30em", "30em", "50em", "50em", "50em", "50em"])
@@ -44,7 +44,7 @@ def message(qa: QA) -> rx.Component:
 def chat() -> rx.Component:
     """List all the messages in a single conversation."""
     return rx.vstack(
-        rx.box(rx.foreach(State.chat_history, message), width="100%"),
+        rx.box(rx.foreach(VisitState.chat_history, message), width="100%"),
         py="8",
         flex="1",
         width="100%",
@@ -80,7 +80,7 @@ def action_bar() -> rx.Component:
                         ),
                         rx.button(
                             rx.cond(
-                                State.processing,
+                                VisitState.processing,
                                 loading_icon(height="1em"),
                                 rx.text("Send"),
                             ),
@@ -91,9 +91,9 @@ def action_bar() -> rx.Component:
                         width="100%",
                         padding="8px",
                     ),
-                    is_disabled=State.processing,
+                    is_disabled=VisitState.processing,
                 ),
-                on_submit=State.process_question,
+                on_submit=VisitState.process_question,
                 reset_on_submit=True,
             ),
         padding="4",

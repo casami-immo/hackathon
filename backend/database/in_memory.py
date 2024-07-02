@@ -1,6 +1,7 @@
 import requests
 import io
 import pathlib
+from uuid import uuid4
 
 
 def load_subtitle(link):
@@ -12,12 +13,10 @@ TEST_DATA_PATH = pathlib.Path(__file__).parent.joinpath("test_data")
 
 DATA = [
     {
-        "id": 0,
+        "id": "0",
         "name": "Test Property",
         "address": "20 rue Raspail, 92300 Levallois-Perret",
-        "lot_number": "0039",
         "floor": "5",
-        "surface(m2)": "34.67",
         "taxe_fonciere": "951",
         "condo_fees(annual)": "536",
         "diagnostics": {
@@ -246,17 +245,65 @@ DATA = [
 ]
 
 
-def get_properties():
-    return DATA
+def list_properties():
+    data = [
+        {
+            "name": property["name"],
+            "id": property["id"]
+        }
+        for property in DATA
+    ]
+    return data
+
+def new_property(property_data: dict):
+    property_data["id"] = str(uuid4())
+    property_data["areas"] = []
+    property_data["name"] = property_data["address"]
+    DATA.append(property_data)
+    return property_data["id"]
+
+def delete_property(property_id: int):
+    for i, property in enumerate(DATA):
+        if property["id"] == property_id:
+            return DATA.pop(i)
+    return None
+
+def update_property(property_id: int, property_data: dict):
+    for i, property in enumerate(DATA):
+        if property["id"] == property_id:
+            DATA[i] = property_data
+            return property_data
+    return None
+
+def new_area(property_id: str, area_data: dict):
+    property = get_property_by_id(property_id)
+    area_data["id"] = len(property["areas"])
+    property["areas"].append(area_data)
+    return area_data
+
+def update_area(property_id: str, area_id: int, area_data: dict):
+    property = get_property_by_id(property_id)
+    for i, area in enumerate(property["areas"]):
+        if area["id"] == area_id:
+            property["areas"][i] = area_data
+            return area_data
+    return None
+
+def delete_area(property_id: str, area_id: int):
+    property = get_property_by_id(property_id)
+    for i, area in enumerate(property["areas"]):
+        if area["id"] == area_id:
+            return property["areas"].pop(i)
+    return None
 
 
-def get_property_by_id(id: int):
+def get_property_by_id(id: str):
     for property in DATA:
         if property["id"] == id:
             return property
     return None
 
 
-def get_areas_by_property_id(property_id: int):
+def get_areas_by_property_id(property_id: str):
     property = get_property_by_id(property_id)
     return property["areas"]
