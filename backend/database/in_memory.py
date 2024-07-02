@@ -277,6 +277,7 @@ def update_property(property_id: int, property_data: dict):
 
 def new_area(property_id: str, area_data: dict):
     property = get_property_by_id(property_id)
+    area_data["id"] = len(property["areas"])
     property["areas"].append(area_data)
     return area_data
 

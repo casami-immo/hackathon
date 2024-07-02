@@ -5,6 +5,8 @@ from hackathon.components.layout import apply_layout
 from hackathon.pages.new_property import new_property
 from hackathon.pages.properties import properties
 from hackathon.pages.visit_page.page import visit
+from hackathon.pages.property_edit import property_edit
+from hackathon.pages.new_area import new_area_page
 
 def index() -> rx.Component:
     """The main app."""
@@ -27,3 +29,4 @@ app = rx.App(
 app.add_page(index)
 app.add_page(new_property, route="/new_property")
 app.add_page(visit, route="/visit/[property_id]")
+app.add_page(property_edit, route="/properties/[property_id]/edit")
