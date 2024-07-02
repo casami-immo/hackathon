@@ -13,7 +13,7 @@ TEST_DATA_PATH = pathlib.Path(__file__).parent.joinpath("test_data")
 
 DATA = [
     {
-        "id": 0,
+        "id": "0",
         "name": "Test Property",
         "address": "20 rue Raspail, 92300 Levallois-Perret",
         "floor": "5",
@@ -245,8 +245,15 @@ DATA = [
 ]
 
 
-def get_properties():
-    return DATA
+def list_properties():
+    data = [
+        {
+            "name": property["name"],
+            "id": property["id"]
+        }
+        for property in DATA
+    ]
+    return data
 
 def new_property(property_data: dict):
     property_data["id"] = str(uuid4())
@@ -268,12 +275,12 @@ def update_property(property_id: int, property_data: dict):
             return property_data
     return None
 
-def new_area(property_id: int, area_data: dict):
+def new_area(property_id: str, area_data: dict):
     property = get_property_by_id(property_id)
     property["areas"].append(area_data)
     return area_data
 
-def update_area(property_id: int, area_id: int, area_data: dict):
+def update_area(property_id: str, area_id: int, area_data: dict):
     property = get_property_by_id(property_id)
     for i, area in enumerate(property["areas"]):
         if area["id"] == area_id:
@@ -281,7 +288,7 @@ def update_area(property_id: int, area_id: int, area_data: dict):
             return area_data
     return None
 
-def delete_area(property_id: int, area_id: int):
+def delete_area(property_id: str, area_id: int):
     property = get_property_by_id(property_id)
     for i, area in enumerate(property["areas"]):
         if area["id"] == area_id:
@@ -289,13 +296,13 @@ def delete_area(property_id: int, area_id: int):
     return None
 
 
-def get_property_by_id(id: int):
+def get_property_by_id(id: str):
     for property in DATA:
         if property["id"] == id:
             return property
     return None
 
 
-def get_areas_by_property_id(property_id: int):
+def get_areas_by_property_id(property_id: str):
     property = get_property_by_id(property_id)
     return property["areas"]
