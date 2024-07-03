@@ -3,7 +3,7 @@ import copy
 from typing import List, Tuple
 from openai import OpenAI
 import reflex as rx
-from .database import in_memory as db
+from .database import db
 
 
 # Checking if the API key is set properly
@@ -11,9 +11,9 @@ if not os.getenv("OPENAI_API_KEY"):
     raise Exception("Please set OPENAI_API_KEY environment variable.")
 
 
-def get_property_info(property_id: int) -> Tuple[str, str]:
+def get_property_info(property_id: str) -> Tuple[str, str]:
     """Get the property information from the database."""
-    property_info = copy.deepcopy(db.get_property_by_id(property_id))
+    property_info = db.get_property(property_id).dict()
 
     # remove video url and subtitles in areas
     for i, area in enumerate(property_info["areas"]):

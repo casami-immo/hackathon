@@ -7,6 +7,7 @@ from hackathon.pages.properties import properties
 from hackathon.pages.visit_page.page import visit
 from hackathon.pages.property_edit import property_edit
 from hackathon.pages.new_area import new_area_page
+from hackathon.pages.area_caption import area_caption
 
 def index() -> rx.Component:
     """The main app."""

@@ -1,12 +1,14 @@
 import reflex as rx
 from hackathon.components.layout import apply_layout
-from backend.database import in_memory as db
+from backend.database import db
+from backend.models import Area, File
 
 
 class AreaState(rx.State):
     """The app state."""
 
-    video = ""
+    video_file_id = ""
+    video_url = ""
 
     async def handle_upload(self, files: list[rx.UploadFile]):
         """Handle the upload of file(s).
@@ -16,31 +18,28 @@ class AreaState(rx.State):
         """
         for file in files:
             upload_data = await file.read()
-            outfile = rx.get_upload_dir() / file.filename
 
-            # Save the file.
-            with outfile.open("wb") as file_object:
-                file_object.write(upload_data)
-
-            # Update the img var.
-            self.video = f"http://localhost:8000/_upload/{file.filename}"
-
-    @rx.var
-    def video_uploaded(self):
-        return self.video != ""
+            self.video_file_id = db.add_file(
+                filename=file.filename,
+                content=upload_data,
+            )
+            self.video_url = db.get_file(self.video_file_id).url
+            self.video_url.replace(
+                "http://localhost:8000/", f"http://{self.router.headers.host}/"
+            )
 
     def create_area(self, form_data: dict):
         """Create a new area."""
-        db.new_area(
+        area_id = db.add_area(
             property_id=self.router.page.params["property_id"],
-            area_data=dict(
-                property_id=self.router.page.params["property_id"],
+            area=Area(
                 name=form_data["name"],
-                desc=form_data["desc"],
-                video=self.video,
-            )
+                description=form_data["desc"],
+                video=db.get_file(self.video_file_id),
+                qa=[],
+            ),
         )
-        return rx.redirect(f"/properties/{self.router.page.params['property_id']}/edit")
+        return rx.redirect(f"/properties/{self.router.page.params['property_id']}/areas/{area_id}/caption")
 
 
 def upload_zone():
@@ -69,24 +68,28 @@ def new_area_page() -> rx.Component:
         rx.chakra.vstack(
             rx.chakra.heading("Add a new area"),
             rx.chakra.form(
-                rx.chakra.form_control(
-                    rx.chakra.form_label("Name"),
-                    rx.chakra.input(placeholder="Name of the area", name="name"),
+                rx.chakra.vstack(
+                    rx.chakra.form_control(
+                        rx.chakra.form_label("Name"),
+                        rx.chakra.input(placeholder="Name of the area", name="name"),
+                    ),
+                    rx.chakra.form_control(
+                        rx.chakra.form_label("A short description of the area"),
+                        rx.chakra.input(placeholder="Description", name="desc"),
+                    ),
+                    rx.cond(
+                        AreaState.video_url == "",
+                        upload_zone(),
+                        rx.video(
+                            url=AreaState.video_url, width="500px", height="300px"
+                        ),
+                    ),
+                    rx.chakra.form_control(
+                        rx.chakra.button("Save Area", color="indigo", type_="submit", align="right"),
+                    ),
+                    padding="8px",
+                    spacing="16px",
                 ),
-                rx.chakra.form_control(
-                    rx.chakra.form_label("A short description of the area"),
-                    rx.chakra.input(placeholder="Description", name="desc"),
-                ),
-                rx.cond(
-                    AreaState.video_uploaded,
-                    rx.video(url=AreaState.video, width="500px", height="300px"),
-                    upload_zone(),
-                ),
-                rx.chakra.form_control(
-                    rx.chakra.button("Save Area", color="indigo", type_="submit"),
-                ),
-                padding="lg",
-                spacing="lg",
                 on_submit=AreaState.create_area,
             ),
         )

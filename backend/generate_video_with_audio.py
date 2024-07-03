@@ -1,6 +1,7 @@
 import base64
 import os
 from io import BytesIO
+import tempfile
 
 import cv2
 import google.generativeai as genai
@@ -15,7 +16,10 @@ from moviepy.editor import (
 from openai import OpenAI
 from PIL import Image
 
-from backend.database.in_memory import get_areas_by_property_id
+from backend.database import db
+
+
+WORD_PER_MINUTE = 130
 
 
 def download_video(url, filename):
@@ -32,6 +36,8 @@ def download_video(url, filename):
 
 
 def read_videos(video_path, fmt="PNG", interval_seconds=1):
+    if not os.path.exists(video_path):
+        raise FileNotFoundError(f"Video file not found: {video_path}")
     video = cv2.VideoCapture(video_path)
 
     fps = video.get(cv2.CAP_PROP_FPS)
@@ -62,7 +68,7 @@ def read_videos(video_path, fmt="PNG", interval_seconds=1):
 
 
 def calculate_max_words(length):
-    return int(130 / 60 * length)
+    return int(WORD_PER_MINUTE / 60 * length)
 
 
 def get_system_prompt(name_area, qa_pairs, max_words=150):
@@ -101,10 +107,13 @@ def get_system_prompt(name_area, qa_pairs, max_words=150):
     return prefix + qa_info
 
 
-def generate_descriptions(area, video_path):
-    base64_images, length = read_videos(video_path)
-    name_area = area["name"]
-    qa_pairs = area["qa"]
+def generate_descriptions(area, video_url):
+    with tempfile.TemporaryDirectory() as path:
+        video_path = os.path.join(path, "video.mp4")
+        download_video(video_url, video_path)
+        base64_images, length = read_videos(video_path)
+    name_area = area.name
+    qa_pairs = area.dict()["qa"]
     max_words = calculate_max_words(length)
     system_prompt = get_system_prompt(name_area, qa_pairs, max_words)
     model = genai.GenerativeModel(
@@ -116,8 +125,9 @@ def generate_descriptions(area, video_path):
 
     messages = [{"role": "user", "parts": parts}]
 
-    response = model.generate_content(messages)
-    return response.candidates[0].content.parts[0].text
+    response = model.generate_content(messages, stream=True)
+    for chunk in response:
+        yield chunk.text
 
 
 def text_to_speech_audio(text, audio_path):
@@ -127,7 +137,8 @@ def text_to_speech_audio(text, audio_path):
 
 
 def combine_audio_video(audio_path, video_path, output_directory):
-
+    if not os.path.exists(video_path):
+        raise FileNotFoundError(f"Video file not found: {video_path}")
     video_clip = VideoFileClip(video_path)
     audio_clip = AudioFileClip(audio_path)
 
@@ -139,16 +150,34 @@ def combine_audio_video(audio_path, video_path, output_directory):
 
     audio_clip = concatenate_audioclips([audio_clip, silence])
     final_clip = video_clip.set_audio(audio_clip.subclip(0, video_clip.duration))
-    output_file_name = os.path.basename(video_path).replace(".mp4", "_with_audio.mp4")
+    output_file_name = (
+        os.path.basename(video_path).split(os.path.extsep)[0] + "_with_audio.mp4"
+    )
 
     output_file_path = os.path.join(output_directory, output_file_name)
-    final_clip.write_videofile(output_file_path, codec="libx264", audio_codec="aac")
+    final_clip.write_videofile(
+        output_file_path,
+        codec="libx264",
+        audio_codec="aac",
+        ffmpeg_params=["-crf", "18", "-aspect", "9:16"],)
 
     print(f"Combined video and audio file saved as {output_file_path}")
+    return output_file_path
+
+
+def merge_caption_to_video(video_url, caption):
+    with tempfile.TemporaryDirectory() as path:
+        audio_path = os.path.join(path, "caption.mp3")
+        video_local_path = os.path.join(path, "video.mp4")
+        download_video(video_url, video_local_path)
+        text_to_speech_audio(caption, audio_path)
+        output_file = combine_audio_video(audio_path, video_local_path, path)
+        with open(output_file, "rb") as file:
+            return file.read()
 
 
 if __name__ == "__main__":
-    AREAS = get_areas_by_property_id(0)
+    AREAS = db.list_areas("0")[0]
     CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
     for area in AREAS:
         os.makedirs(os.path.join(CURRENT_DIR, "videos"), exist_ok=True)
