@@ -119,6 +119,10 @@ class AreaCaptionState(rx.State):
             self.router.page.params["area_id"],
             new_area,
         )
+        # reset the state
+        self.caption = ""
+        self.output_file = File(filename="", url="")
+        
         return rx.redirect(
             f"/properties/{self.router.page.params['property_id']}/edit")
 
