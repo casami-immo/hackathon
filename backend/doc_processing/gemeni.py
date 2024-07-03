@@ -18,7 +18,7 @@ Instructions:
 1. Be precise and only respond with information available in the documents.
 2. If requested information is missing, respond with `null`.
 3. Omit empty arrays.
-4. Provide your response in YAML format without additional explanations.
+4. Provide your response in JSON format without additional explanations.
 
 Output Structure using this JSON schema::
 {
@@ -71,8 +71,11 @@ def convert_pdf_to_grayscale_images(pdf_path, fmt="PNG"):
     images = convert_from_path(pdf_path)
 
     base64_images = []
-    for image in images:
+    for i,image in enumerate(images):
         grayscale_image = image.convert("L")
+
+        # with open('./uploaded_files/pdf_image_{}.png'.format(i), 'wb') as f:
+        #     grayscale_image.save(f)
 
         buffered = BytesIO()
         grayscale_image.save(buffered, format=fmt)

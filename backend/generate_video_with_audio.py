@@ -134,7 +134,10 @@ def generate_descriptions(area, video_url):
     print('Generating caption')
     response = model.generate_content(messages, stream=True)
     for chunk in response:
-        yield chunk.text
+        try:
+            yield chunk.text
+        except Exception as e:
+            continue
 
     # print(perf_counter() - start)
 

@@ -39,6 +39,8 @@ class AreaState(rx.State):
                 qa=[],
             ),
         )
+        self.video_file_id = ""
+        self.video_url = ""
         return rx.redirect(f"/properties/{self.router.page.params['property_id']}/areas/{area_id}/caption")
 
 

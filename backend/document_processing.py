@@ -6,4 +6,6 @@ from backend.models import Property
 
 def extract_data(file_paths):
     response = extract_gemini(file_paths)
-    return Property(**json.loads(response))
+    property = Property(**json.loads(response))
+    property.name = f"{property.type} - {property.diagnostics.carrez.total}m²"
+    return property
