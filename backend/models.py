@@ -32,15 +32,8 @@ class CarrezArea(rx.Base):
 
 class Carrez(rx.Base):
     rooms: List[CarrezArea]
-    date: datetime.date
+    date: str
     total: float
-
-    @root_validator(pre=True)
-    def parse_date(cls, values):
-        value = values.get("date")
-        value = datetime.datetime.strptime(value, "%Y-%m-%d")
-        values["date"] = value
-        return values
 
 
 class DPEDetails(rx.Base):
@@ -56,40 +49,19 @@ class DPE(rx.Base):
     energy_consumption: float
     gaz_emission_category: str
     gaz_emission: float
-    date: datetime.date
-    expiring_date: datetime.date
+    date: str
+    expiring_date: str
     details: DPEDetails
-
-    @root_validator(pre=True)
-    def parse_date(cls, values):
-        value = values.get("date")
-        value = datetime.datetime.strptime(value, "%Y-%m-%d")
-        values["date"] = value
-        return values
 
 
 class Abestos(rx.Base):
     presence: bool
-    date: datetime.date
-
-    @root_validator(pre=True)
-    def parse_date(cls, values):
-        value = values.get("date")
-        value = datetime.datetime.strptime(value, "%Y-%m-%d")
-        values["date"] = value
-        return values
+    date: str
 
 
 class Electricity(rx.Base):
     conform: bool
-    date: datetime.date
-
-    @root_validator(pre=True)
-    def parse_date(cls, values):
-        value = values.get("date")
-        value = datetime.datetime.strptime(value, "%Y-%m-%d")
-        values["date"] = value
-        return values
+    date: str
 
 
 class Diagnostics(rx.Base):

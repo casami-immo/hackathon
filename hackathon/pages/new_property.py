@@ -31,8 +31,8 @@ class FormState(rx.State):
             outfiles.append(outfile)
 
         # Process info
-        data = extract_data(outfiles)
-        property = Property(**data)
+        property = extract_data(outfiles)
+        print(property)
         # Save the data
         property_id = db.add_property(property)
         # wait and check if the property is saved
