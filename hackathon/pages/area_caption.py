@@ -30,17 +30,16 @@ class AreaCaptionState(rx.State):
         except:
             return ""
 
-    @rx.cached_var
+    @rx.var
     def area(self) -> Area:
         """Get the current area."""
         try:
             print(self.router.page.params)
             return db.get_area(
-                self.router.page.params.get("property_id", "0"),
-                self.router.page.params.get("area_id", "0")
+                self.router.page.params.get("property_id"),
+                self.router.page.params.get("area_id")
             )
         except Exception as exc:
-            raise exc
             return Area(name="")
 
     @rx.var
@@ -58,6 +57,7 @@ class AreaCaptionState(rx.State):
 
     async def generate_caption(self):
         """Generate the caption for the area."""
+        print("Generating caption for video url", self.video_url)
         self.generating = True
         yield
         try:
@@ -97,11 +97,13 @@ class AreaCaptionState(rx.State):
 
     def save_area(self):
         """Save the area."""
-        self.area.video = self.output_file
+        new_area_dict = self.area.dict()
+        new_area_dict["video"] = self.output_file.dict()
+        new_area = Area(**new_area_dict)
         db.update_area(
             self.router.page.params["property_id"],
             self.router.page.params["area_id"],
-            self.area,
+            new_area,
         )
         return rx.redirect(
             f"/properties/{self.router.page.params['property_id']}/edit")
