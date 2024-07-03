@@ -15,7 +15,7 @@ from moviepy.editor import (
 )
 from openai import OpenAI
 from PIL import Image
-
+from time import perf_counter
 from backend.database import db
 
 
@@ -23,8 +23,8 @@ WORD_PER_MINUTE = 130
 
 
 def download_video(url, filename):
-    response = requests.get(url, stream=True)
-
+    response = requests.get(url, stream=True, timeout=30)
+    print(response.status_code)
     if response.status_code == 200:
         with open(filename, "wb") as file:
             for chunk in response.iter_content(chunk_size=1024):
@@ -108,10 +108,16 @@ def get_system_prompt(name_area, qa_pairs, max_words=150):
 
 
 def generate_descriptions(area, video_url):
+    start = perf_counter()
     with tempfile.TemporaryDirectory() as path:
         video_path = os.path.join(path, "video.mp4")
+        print(f'Downloading video {video_url}')
         download_video(video_url, video_path)
+        print(perf_counter() - start)
+        print('Reading video')
         base64_images, length = read_videos(video_path)
+        print(perf_counter() - start)
+    print("Preparing the prompt")
     name_area = area.name
     qa_pairs = area.dict()["qa"]
     max_words = calculate_max_words(length)
@@ -124,10 +130,13 @@ def generate_descriptions(area, video_url):
         parts.append(glm.Blob(mime_type="image/png", data=image))
 
     messages = [{"role": "user", "parts": parts}]
-
+    # print(perf_counter() - start)
+    print('Generating caption')
     response = model.generate_content(messages, stream=True)
     for chunk in response:
         yield chunk.text
+
+    # print(perf_counter() - start)
 
 
 def text_to_speech_audio(text, audio_path):
