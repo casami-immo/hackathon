@@ -56,7 +56,7 @@ Output Structure using this JSON schema::
         },
         "abestos": {
             "date": # asbestos detection date in YYYY-mm-dd format,
-            "presence": # true/false if asbestos is present (bool)
+            "presence": # true/false if abestos is present (bool)
         },
         "electricity": {
             "date": # electricity detection date in YYYY-mm-dd format,
@@ -71,12 +71,14 @@ def convert_pdf_to_grayscale_images(pdf_path, fmt="PNG"):
     images = convert_from_path(pdf_path)
 
     base64_images = []
-    for i,image in enumerate(images):
+    for i, image in enumerate(images):
         grayscale_image = image.convert("L")
-
-        # with open('./uploaded_files/pdf_image_{}.png'.format(i), 'wb') as f:
-        #     grayscale_image.save(f)
-
+        grayscale_image = grayscale_image.resize(
+            (
+                int(grayscale_image.size[0] / 1.5),
+                int(grayscale_image.size[1] / 1.5),
+            )
+        )
         buffered = BytesIO()
         grayscale_image.save(buffered, format=fmt)
 
@@ -90,16 +92,15 @@ def extract_gemini(document_paths: List[str]):
     messages = []
     for document_path in document_paths:
         images = convert_pdf_to_grayscale_images(document_path)
-        messages.extend(
-            {
-                "role": "user",
-                "parts": [
-                    glm.Blob(mime_type="image/png", data=image) for image in images
-                ],
-            }
-        )
+        for image in images:
+            messages.append(
+                {
+                    "role": "user",
+                    "parts": [glm.Blob(mime_type="image/png", data=image)],
+                }
+            )
     model = genai.GenerativeModel(
-        "gemini-1.5-flash-latest",
+        "gemini-1.5-pro-latest",
         system_instruction=[SYS_PROMPT],
         generation_config={"response_mime_type": "application/json"},
     )
