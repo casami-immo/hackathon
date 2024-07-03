@@ -142,7 +142,12 @@ def combine_audio_video(audio_path, video_path, output_directory):
     output_file_name = os.path.basename(video_path).replace(".mp4", "_with_audio.mp4")
 
     output_file_path = os.path.join(output_directory, output_file_name)
-    final_clip.write_videofile(output_file_path, codec="libx264", audio_codec="aac")
+    final_clip.write_videofile(
+        output_file_path,
+        codec="libx264",
+        audio_codec="aac",
+        ffmpeg_params=["-crf", "18", "-aspect", "9:16"],
+    )
 
     print(f"Combined video and audio file saved as {output_file_path}")
 
