@@ -29,7 +29,7 @@ class AreaCaptionState(rx.State):
                 return self.output_file.url
         except:
             return ""
-        
+          
     @property
     def area(self) -> Area:
         """Get the current area."""

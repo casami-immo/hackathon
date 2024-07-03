@@ -1,8 +1,9 @@
-from typing import List, Dict
-from datetime import datetime
+import datetime
+from typing import Dict, List
 from uuid import uuid4
 
 import reflex as rx
+from pydantic.v1 import root_validator
 
 
 class File(rx.Base):
@@ -15,21 +16,31 @@ class QA(rx.Base):
     question: str
     answer: str
 
+
 class Area(rx.Base):
     id: str = str(uuid4())
-    name: str = ''
-    description: str = ''
+    name: str = ""
+    description: str = ""
     video: File = None
-    qa : List[QA] = []
+    qa: List[QA] = []
+
 
 class CarrezArea(rx.Base):
     name: str
     surface: float
 
+
 class Carrez(rx.Base):
     rooms: List[CarrezArea]
-    date: datetime
+    date: datetime.date
     total: float
+
+    @root_validator(pre=True)
+    def parse_date(cls, values):
+        value = values.get("date")
+        value = datetime.datetime.strptime(value, "%Y-%m-%d")
+        values["date"] = value
+        return values
 
 
 class DPEDetails(rx.Base):
@@ -45,19 +56,40 @@ class DPE(rx.Base):
     energy_consumption: float
     gaz_emission_category: str
     gaz_emission: float
-    date: datetime
-    expiring_date: datetime
+    date: datetime.date
+    expiring_date: datetime.date
     details: DPEDetails
+
+    @root_validator(pre=True)
+    def parse_date(cls, values):
+        value = values.get("date")
+        value = datetime.datetime.strptime(value, "%Y-%m-%d")
+        values["date"] = value
+        return values
 
 
 class Abestos(rx.Base):
     presence: bool
-    date: datetime
+    date: datetime.date
+
+    @root_validator(pre=True)
+    def parse_date(cls, values):
+        value = values.get("date")
+        value = datetime.datetime.strptime(value, "%Y-%m-%d")
+        values["date"] = value
+        return values
 
 
 class Electricity(rx.Base):
     conform: bool
-    date: datetime
+    date: datetime.date
+
+    @root_validator(pre=True)
+    def parse_date(cls, values):
+        value = values.get("date")
+        value = datetime.datetime.strptime(value, "%Y-%m-%d")
+        values["date"] = value
+        return values
 
 
 class Diagnostics(rx.Base):
@@ -76,5 +108,3 @@ class Property(rx.Base):
     condo_fees: float = None
     diagnostics: Diagnostics = None
     areas: Dict[str, Area] = {}
-
-

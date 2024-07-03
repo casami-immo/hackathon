@@ -42,19 +42,19 @@ Output Structure using this JSON schema::
         "dpe": {
             "energy_category": # energy consumption class (A/B/C/D/E/F/G),
             "energy_consumption": # energy consumption in kWh/m²/year (number),
-            "emission": # CO2 emissions in kgCO2/m²/year (number),
-            "emission_category": # CO2 emissions class (A/B/C/D/E/F/G),
+            "gaz_emission": # CO2 emissions in kgCO2/m²/year (number),
+            "gaz_emission_category": # CO2 emissions class (A/B/C/D/E/F/G),
             "date": # diagnosis date in YYYY-mm-dd format,
             "expiring_date": # expiration date in YYYY-mm-dd format,
             "details": {
-                "heating": # heating system type,
-                "hot_water": # hot water system type,
-                "air_conditioning": # air conditioning system type,
-                "ventilation": # ventilation system type,
-                "windows": # window type
+                "heating_type": # heating system type,
+                "hot_water_type": # hot water system type,
+                "air_conditioning": # air conditioning presence (bool),
+                "ventilation_type": # ventilation system type,
+                "windows_type": # window type
             }
         },
-        "asbestos": {
+        "abestos": {
             "date": # asbestos detection date in YYYY-mm-dd format,
             "presence": # true/false if asbestos is present (bool)
         },
