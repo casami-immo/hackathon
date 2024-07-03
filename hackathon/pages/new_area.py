@@ -25,13 +25,12 @@ class AreaState(rx.State):
             )
             self.video_url = db.get_file(self.video_file_id).url
             self.video_url.replace(
-                "http://localhost:8000/", 
-                f"http://{self.router.headers.host}/"
+                "http://localhost:8000/", f"http://{self.router.headers.host}/"
             )
 
     def create_area(self, form_data: dict):
         """Create a new area."""
-        db.add_area(
+        area_id = db.add_area(
             property_id=self.router.page.params["property_id"],
             area=Area(
                 name=form_data["name"],
@@ -40,7 +39,7 @@ class AreaState(rx.State):
                 qa=[],
             ),
         )
-        return rx.redirect(f"/properties/{self.router.page.params['property_id']}/edit")
+        return rx.redirect(f"/properties/{self.router.page.params['property_id']}/areas/{area_id}/caption")
 
 
 def upload_zone():
@@ -69,24 +68,28 @@ def new_area_page() -> rx.Component:
         rx.chakra.vstack(
             rx.chakra.heading("Add a new area"),
             rx.chakra.form(
-                rx.chakra.form_control(
-                    rx.chakra.form_label("Name"),
-                    rx.chakra.input(placeholder="Name of the area", name="name"),
+                rx.chakra.vstack(
+                    rx.chakra.form_control(
+                        rx.chakra.form_label("Name"),
+                        rx.chakra.input(placeholder="Name of the area", name="name"),
+                    ),
+                    rx.chakra.form_control(
+                        rx.chakra.form_label("A short description of the area"),
+                        rx.chakra.input(placeholder="Description", name="desc"),
+                    ),
+                    rx.cond(
+                        AreaState.video_url == "",
+                        upload_zone(),
+                        rx.video(
+                            url=AreaState.video_url, width="500px", height="300px"
+                        ),
+                    ),
+                    rx.chakra.form_control(
+                        rx.chakra.button("Save Area", color="indigo", type_="submit", align="right"),
+                    ),
+                    padding="8px",
+                    spacing="16px",
                 ),
-                rx.chakra.form_control(
-                    rx.chakra.form_label("A short description of the area"),
-                    rx.chakra.input(placeholder="Description", name="desc"),
-                ),
-                rx.cond(
-                    AreaState.video_url == "",
-                    upload_zone(),
-                    rx.video(url=AreaState.video_url, width="500px", height="300px"),
-                ),
-                rx.chakra.form_control(
-                    rx.chakra.button("Save Area", color="indigo", type_="submit"),
-                ),
-                padding="lg",
-                spacing="lg",
                 on_submit=AreaState.create_area,
             ),
         )

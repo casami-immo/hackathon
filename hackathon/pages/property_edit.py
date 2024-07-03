@@ -55,6 +55,7 @@ def area_item(area: Area) -> rx.Component:
             rx.video(url=area.video.url, width="300px", height="300px"),
         ),
         rx.chakra.button("Delete", on_click=PropEditState.delete_area(area.id)),
+        rx.chakra.button("Edit", on_click=rx.redirect(f"/properties/{PropEditState.current_property.id}/areas/{area.id}/caption")),
         padding="lg",
         align_items="left",
     )
@@ -74,6 +75,10 @@ def property_edit() -> rx.Component:
                 rx.chakra.text("Surface: " + PropEditState.surface),
                 # display the areas
                 rx.chakra.heading("Areas", size="xl"),
+                rx.chakra.button(
+                    "Done",
+                    on_click=rx.redirect(f"/"),
+                ),
                 rx.chakra.button(
                     "Add Area",
                     on_click=PropEditState.new_area,

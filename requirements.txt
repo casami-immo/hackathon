@@ -1,2 +1,9 @@
 reflex>=0.4.7
 openai>=1.14.0
+llmsherpa
+instructor
+unstructured
+pdf2image
+pdfminer-six
+google-generativeai
+google-cloud-aiplatform
