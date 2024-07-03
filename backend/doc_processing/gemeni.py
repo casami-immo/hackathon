@@ -7,7 +7,7 @@ import google.generativeai as genai
 from google.ai import generativelanguage as glm
 from pdf2image import convert_from_path
 
-genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 
 SYS_PROMPT = """
 Role: Real Estate Documentation Analysis Assistant
