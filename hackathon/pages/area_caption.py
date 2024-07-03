@@ -29,18 +29,32 @@ class AreaCaptionState(rx.State):
                 return self.output_file.url
         except:
             return ""
-
-    @rx.var
+        
+    @property
     def area(self) -> Area:
         """Get the current area."""
-        try:
-            print(self.router.page.params)
-            return db.get_area(
-                self.router.page.params.get("property_id"),
-                self.router.page.params.get("area_id")
-            )
-        except Exception as exc:
+        area = db.get_area(
+            self.router.page.params.get("property_id"),
+            self.router.page.params.get("area_id")
+        )
+        if area is None:
             return Area(name="")
+        return area
+        
+    @rx.var
+    def no_area(self) -> bool:
+        """Check if there is no area."""
+        return self.area.name == ""
+    
+    @rx.var(initial_value="")
+    def area_name(self) -> str:
+        """Get the current area name."""
+        return self.area.name
+    
+    @rx.var(initial_value="")
+    def area_description(self) -> str:
+        """Get the current area description."""
+        return self.area.description
 
     @rx.var
     def video_url(self) -> str:
@@ -113,15 +127,15 @@ class AreaCaptionState(rx.State):
 def area_caption():
     return apply_layout(
         rx.cond(
-            AreaCaptionState.area.name == "",
+            AreaCaptionState.no_area,
             rx.chakra.heading("Area not found", size="xl", padding="4px"),
             rx.chakra.vstack(
                 rx.chakra.heading("Edit Area Caption", size="2xl", padding="4px"),
                 rx.chakra.heading(
-                    "Area: " + AreaCaptionState.area.name, size="lg", padding="4px"
+                    "Area: " + AreaCaptionState.area_name, size="lg", padding="4px"
                 ),
                 rx.chakra.heading("Description", size="lg", padding="4px"),
-                rx.text(AreaCaptionState.area.description),
+                rx.text(AreaCaptionState.area_description),
                 rx.chakra.heading("Video", size="lg", padding="4px"),
                 rx.video(url=AreaCaptionState.video_url, width="300px", height="300px"),
                 rx.chakra.vstack(
