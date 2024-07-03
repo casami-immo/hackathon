@@ -1,6 +1,7 @@
 import base64
 import os
 from io import BytesIO
+from typing import List
 
 import google.generativeai as genai
 from google.ai import generativelanguage as glm
@@ -82,14 +83,18 @@ def convert_pdf_to_grayscale_images(pdf_path, fmt="PNG"):
     return base64_images
 
 
-def extract_gemini(document_path):
-    images = convert_pdf_to_grayscale_images(document_path)
-    messages = [
-        {
-            "role": "user",
-            "parts": [glm.Blob(mime_type="image/png", data=image) for image in images],
-        }
-    ]
+def extract_gemini(document_paths: List[str]):
+    messages = []
+    for document_path in document_paths:
+        images = convert_pdf_to_grayscale_images(document_path)
+        messages.extend(
+            {
+                "role": "user",
+                "parts": [
+                    glm.Blob(mime_type="image/png", data=image) for image in images
+                ],
+            }
+        )
     model = genai.GenerativeModel(
         "gemini-1.5-flash-latest",
         system_instruction=[SYS_PROMPT],
