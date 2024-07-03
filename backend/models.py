@@ -26,49 +26,49 @@ class Area(rx.Base):
 
 
 class CarrezArea(rx.Base):
-    name: str
-    surface: float
+    name: str = ""
+    surface: float = None
 
 
 class Carrez(rx.Base):
-    rooms: List[CarrezArea]
-    date: str
-    total: float
+    rooms: List[CarrezArea] = []
+    date: str = None
+    total: float = None
 
 
 class DPEDetails(rx.Base):
-    heating_type: str
-    hot_water_type: str
-    air_conditioning: bool
-    ventilation_type: str
-    windows_type: str
+    heating_type: str = None
+    hot_water_type: str = None
+    air_conditioning: bool = None
+    ventilation_type: str = None
+    windows_type: str = None
 
 
 class DPE(rx.Base):
-    energy_category: str
-    energy_consumption: float
-    gaz_emission_category: str
-    gaz_emission: float
-    date: str
-    expiring_date: str
-    details: DPEDetails
+    energy_category: str = None
+    energy_consumption: float = None
+    gaz_emission_category: str = None
+    gaz_emission: float = None
+    date: str = None
+    expiring_date: str = None
+    details: DPEDetails = None
 
 
 class Abestos(rx.Base):
-    presence: bool
-    date: str
+    presence: bool = None
+    date: str = None
 
 
 class Electricity(rx.Base):
-    conform: bool
-    date: str
+    conform: bool = None
+    date: str = None
 
 
 class Diagnostics(rx.Base):
-    carrez: Carrez
-    dpe: DPE
-    abestos: Abestos
-    electricity: Electricity
+    carrez: Carrez = None
+    dpe: DPE = None
+    abestos: Abestos = None
+    electricity: Electricity = None
 
 
 class Property(rx.Base):

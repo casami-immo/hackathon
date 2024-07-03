@@ -10,4 +10,5 @@ def apply_layout(children):
         width="100vw",
         height="100vh",
         spacing="0",
+        align_items="left"
     )
