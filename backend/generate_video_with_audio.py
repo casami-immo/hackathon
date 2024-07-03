@@ -19,7 +19,7 @@ from time import perf_counter
 from backend.database import db
 
 
-WORD_PER_MINUTE = 130
+WORD_PER_MINUTE = 110
 
 
 def download_video(url, filename):

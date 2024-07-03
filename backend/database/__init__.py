@@ -1,8 +1,8 @@
 import os
 from .local import LocalDB
-
+from .firebase import FirebaseDB
 
 if os.environ.get("PRODUCTION") == "true":
-    db = LocalDB()
+    db = FirebaseDB()
 else:
-    db = LocalDB()
+    db = FirebaseDB()

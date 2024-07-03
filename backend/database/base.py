@@ -76,4 +76,3 @@ class BaseDB(ABC):
     def delete_file(self, file_id: str):
         "Delete file by id"
         pass
-                    

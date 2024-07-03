@@ -20,3 +20,4 @@ poetry.lock
 venv/
 uploaded_files
 .env
+Lablab Firebase Admin.json
