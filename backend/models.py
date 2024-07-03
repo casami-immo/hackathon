@@ -17,10 +17,10 @@ class QA(rx.Base):
 
 class Area(rx.Base):
     id: str = str(uuid4())
-    name: str
-    description: str
-    video: File
-    qa : List[QA]
+    name: str = ''
+    description: str = ''
+    video: File = None
+    qa : List[QA] = []
 
 class CarrezArea(rx.Base):
     name: str
