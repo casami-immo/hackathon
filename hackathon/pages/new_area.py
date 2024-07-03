@@ -24,6 +24,10 @@ class AreaState(rx.State):
                 content=upload_data,
             )
             self.video_url = db.get_file(self.video_file_id).url
+            self.video_url.replace(
+                "http://localhost:8000/", 
+                f"http://{self.router.headers.host}/"
+            )
 
     def create_area(self, form_data: dict):
         """Create a new area."""

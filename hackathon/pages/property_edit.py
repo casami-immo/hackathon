@@ -21,6 +21,10 @@ class PropEditState(rx.State):
     def areas(self) -> list[Area]:
         try:
             areas = db.list_areas(self.router.page.params["property_id"])
+            for area in areas:
+                area.video.url = area.video.url.replace(
+                    "http://localhost:8000/", f"http://{self.router.headers.host}/"
+                )
         except KeyError:
             areas = []
         return areas

@@ -56,7 +56,9 @@ class VisitState(rx.State):
     def video_url(self) -> str:
         """Get the current video URL."""
         try:
-            return self.current_area.video.url
+            return self.current_area.video.url.replace(
+                "http://localhost:8000/", f"http://{self.router.headers.host}/"
+            )
         except:
             return ""
 

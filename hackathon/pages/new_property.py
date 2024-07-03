@@ -35,6 +35,10 @@ class FormState(rx.State):
         property = Property(**data)
         # Save the data
         property_id = db.add_property(property)
+        # wait and check if the property is saved
+        # if not, return error message
+        # if saved, redirect to the edit page
+        property_check = db.get_property(property_id)
         return rx.redirect(f"/properties/{property_id}/edit")
 
 
