@@ -28,7 +28,7 @@ class AreaState(rx.State):
                 "http://localhost:8000/", f"http://{self.router.headers.host}/"
             )
 
-    def create_area(self, form_data: dict):
+    async def create_area(self, form_data: dict):
         """Create a new area."""
         area_id = db.add_area(
             property_id=self.router.page.params["property_id"],

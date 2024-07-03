@@ -7,3 +7,5 @@ pdf2image
 pdfminer-six
 google-generativeai
 google-cloud-aiplatform
+pdf2image
+pdfminer-six

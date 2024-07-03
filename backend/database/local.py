@@ -91,6 +91,10 @@ class LocalDB(BaseDB):
 
     def get_file(self, file_id: str) -> File:
         return File(**self.data["files"][file_id])
+    
+    def get_file_content(self, file_id: str) -> bytes:
+        with open(f"{self.filedir}/{self.data['files'][file_id]['filename']}", "rb") as f:
+            return f.read()
 
     def add_file(self, filename: str, content: bytes) -> str:
         file_id = str(uuid4())
