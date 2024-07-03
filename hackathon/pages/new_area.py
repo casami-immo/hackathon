@@ -39,7 +39,7 @@ class AreaState(rx.State):
                 qa=[],
             ),
         )
-        return rx.redirect(f"/properties/{self.router.page.params['property_id']}/areas/{area_id}/edit")
+        return rx.redirect(f"/properties/{self.router.page.params['property_id']}/areas/{area_id}/caption")
 
 
 def upload_zone():

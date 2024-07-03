@@ -7,7 +7,7 @@ from backend.generate_video_with_audio import (
     generate_descriptions,
     merge_caption_to_video,
 )
-
+from uuid import uuid4
 
 class AreaCaptionState(rx.State):
     """The app state."""
@@ -83,7 +83,7 @@ class AreaCaptionState(rx.State):
                 caption=self.caption,
             )
             id_ = db.add_file(
-                filename=f"{self.area.id}.mp4", content=output_video_content
+                filename=f"{uuid4()}.mp4", content=output_video_content
             )
             self.output_file = db.get_file(id_)
             print(self.output_file)
