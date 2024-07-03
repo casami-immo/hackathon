@@ -25,10 +25,12 @@ def select_area_dropdown() -> rx.Component:
 
 def area_selector_panel() -> rx.Component:
     """The area selector panel."""
-    return rx.hstack(
-        
+    return rx.chakra.hstack(
         previous_area_button(),
         select_area_dropdown(),
         next_area_button(),
         align="stretch",
+        spacing="32px",
+        align_items="center",
+        width="100%",
     )

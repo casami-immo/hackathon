@@ -4,7 +4,12 @@ from hackathon.components import loading_icon
 from hackathon.pages.visit_page.state import QA, VisitState
 
 
-message_style = dict(display="inline-block", padding="1em", border_radius="8px", max_width=["30em", "30em", "50em", "50em", "50em", "50em"])
+message_style = dict(
+    display="inline-block",
+    padding="1em",
+    border_radius="8px",
+    max_width=["30em", "30em", "50em", "50em", "50em", "50em"],
+)
 
 
 def message(qa: QA) -> rx.Component:
@@ -45,13 +50,13 @@ def chat() -> rx.Component:
     """List all the messages in a single conversation."""
     return rx.vstack(
         rx.box(rx.foreach(VisitState.chat_history, message), width="100%"),
-        py="8",
+        padding_y="8px",
         flex="1",
         width="100%",
         max_width="50em",
-        padding_x="4px",
+        padding_x="8px",
         align_self="center",
-        overflow="hidden",
+        overflow="auto",
         padding_bottom="5em",
     )
 
@@ -60,42 +65,36 @@ def action_bar() -> rx.Component:
     """The action bar to send a new message."""
     return rx.box(
         rx.chakra.form(
-                rx.chakra.form_control(
-                    rx.hstack(
-                        rx.radix.text_field.root(
-                            rx.radix.text_field.input(
-                                placeholder="Ask question here",
-                                id="question",
-
-                                # width=["15em", "20em", "45em", "50em", "50em", "50em"],
-                            ),
-                            # rx.radix.text_field.slot(
-                            #     rx.tooltip(
-                            #         rx.icon("info", size=18),
-                            #         content="Enter a question to get a response.",
-                            #     )
-                            # ),
-                            width="100%",
-                            height="40px",
-                        ),
-                        rx.button(
-                            rx.cond(
-                                VisitState.processing,
-                                loading_icon(height="1em"),
-                                rx.text("Send"),
-                            ),
-                            type="submit",
-                            height="40px",
-                        ),
-                        align_items="stretch",
+            rx.chakra.form_control(
+                rx.chakra.hstack(
+                    rx.chakra.text_area(
+                        placeholder="Ask question here",
+                        name="question",
                         width="100%",
-                        padding="8px",
+                        height="auto",
+                        min_height="80px",
+                        max_height="200px",
+                        overflow_y="auto",
+                        resize="vertical",
                     ),
-                    is_disabled=VisitState.processing,
+                    rx.button(
+                        rx.cond(
+                            VisitState.processing,
+                            loading_icon(height="1em"),
+                            rx.text("Send"),
+                        ),
+                        type="submit",
+                        height="40px",
+                    ),
+                    align_items="stretch",
+                    width="100%",
+                    padding="8px",
                 ),
-                on_submit=VisitState.process_question,
-                reset_on_submit=True,
+                is_disabled=VisitState.processing,
             ),
+            on_submit=VisitState.process_question,
+            reset_on_submit=True,
+        ),
         padding="4",
         width="100%",
         align_items="center",

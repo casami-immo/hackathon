@@ -16,10 +16,10 @@ def get_property_info(property_id: str) -> Tuple[str, str]:
     property_info = db.get_property(property_id).dict()
 
     # remove video url and subtitles in areas
-    for i, area in enumerate(property_info["areas"]):
+    for id_, area in property_info["areas"].items():
         area.pop("video", None)
         area.pop("subtitles", None)
-        property_info["areas"][i] = area
+        property_info["areas"][id_] = area
     return property_info
 
 class QA(rx.Base):
