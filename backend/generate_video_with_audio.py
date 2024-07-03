@@ -71,7 +71,7 @@ def calculate_max_words(length):
     return int(WORD_PER_MINUTE / 60 * length)
 
 
-def get_system_prompt(name_area, qa_pairs, max_words=150):
+def get_system_prompt(name_area, desctiption, qa_pairs, max_words=150):
     prefix = f"""
     Role: Expert Real Estate Agent
 
@@ -91,6 +91,8 @@ def get_system_prompt(name_area, qa_pairs, max_words=150):
     - Incorporates relevant details from the Q&A
     - Uses vivid, professional language
     4. Always start with introducing that we are in {name_area}. For example: "we are entering the {name_area} area"
+    5. Use the information from the description below to add information not present in the video or Q&A
+        Description: {desctiption}
 
     Style Guide:
     - Tone: Enthusiastic and authoritative
@@ -119,9 +121,10 @@ def generate_descriptions(area, video_url):
         print(perf_counter() - start)
     print("Preparing the prompt")
     name_area = area.name
+    description = area.description
     qa_pairs = area.dict()["qa"]
     max_words = calculate_max_words(length)
-    system_prompt = get_system_prompt(name_area, qa_pairs, max_words)
+    system_prompt = get_system_prompt(name_area, description, qa_pairs, max_words)
     model = genai.GenerativeModel(
         "gemini-1.5-flash-latest", system_instruction=[system_prompt]
     )

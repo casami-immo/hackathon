@@ -77,7 +77,8 @@ def new_area_page() -> rx.Component:
                     ),
                     rx.chakra.form_control(
                         rx.chakra.form_label("A short description of the area"),
-                        rx.chakra.input(placeholder="Description", name="desc"),
+                        rx.chakra.text('Add relevant details about the area that visitor should know, such as the surface, materials, date of renovation, etc.'),
+                        rx.text_area(placeholder="Description", name="desc", rows="10"),
                     ),
                     rx.cond(
                         AreaState.video_url == "",
