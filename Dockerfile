@@ -3,6 +3,7 @@ FROM --platform=linux/amd64 python:3.11-slim
 RUN apt-get -y update && apt-get -y upgrade && apt-get install -y \ 
     ffmpeg \
     poppler-utils \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
