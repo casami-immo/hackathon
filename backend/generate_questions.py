@@ -8,7 +8,9 @@ import google.generativeai as genai
 import requests
 from google.ai import generativelanguage as glm
 from PIL import Image
-
+import tempfile
+import json
+from time import perf_counter
 
 def get_sys_prompt(name_area, description, questions):
     prefix = f"""
@@ -35,20 +37,32 @@ def get_sys_prompt(name_area, description, questions):
     - Unique features or potential issues
     - Practical considerations (e.g., storage, functionality)
     - Any aspects not clearly visible or explained in the video
+    - Avoid repeating existing questions
 
     Output Format:
-    Provide a numbered list of questions (minimum 5) without additional commentary. Each question should:
+    Provide a JSON numbered list of questions (minimum 5) without additional commentary. Each question should:
     - Be clear and concise
     - Focus on a single aspect of the {name_area}
     - Provide valuable information for a potential buyer's decision-making process
     - Some questions can be relevant to the frame images of the video tour
 
     Note: Adapt your questions to the specific features and potential concerns relevant to the {name_area} being discussed.
-
+    
     Example Output:
+    "questions": [
+        "What is the age of the kitchen appliances?",
+        "Are there any recent renovations in the kitchen?",
+        "How much storage space is available in the kitchen?",
+        "What type of flooring does the kitchen have?",
+        "Are there any known issues with the kitchen plumbing?"
+    ]
+
+    Input: 
+    - name: {name_area}
+    - description: {description}
+    - current_questions: {questions}
     """
-    qa_info = f"""{questions}"""
-    return prefix + qa_info
+    return prefix
 
 
 def download_video(url, filename):
@@ -108,10 +122,18 @@ def suggest_questions(
     Returns:
     questions (list(str)): Max 5 generated questions.
     """
-    current_dir = os.path.dirname(os.path.realpath(__file__))
-    video_local_path = os.path.join(current_dir, f"/videos/{name}.mp4")
-    download_video(video_url, video_local_path)
-    base64_images, _ = read_videos(video_local_path)
+    start = perf_counter()
+    
+    with tempfile.TemporaryDirectory() as tmp_dir:
+
+        video_local_path = os.path.join(tmp_dir, f"{name}.mp4")
+        print(f"Downloading video to {video_local_path}...")
+        download_video(video_url, video_local_path)
+        print('Done', perf_counter() - start)
+        print("Reading video frames...")
+        base64_images, _ = read_videos(video_local_path)
+        print('Done', perf_counter() - start)
+    print("Generating questions...")
     system_prompt = get_sys_prompt(name, description, current_questions)
     model = genai.GenerativeModel(
         "gemini-1.5-flash-latest", system_instruction=[system_prompt]
@@ -125,7 +147,15 @@ def suggest_questions(
     response = model.generate_content(
         messages, generation_config={"response_mime_type": "application/json"}
     )
+
+   
     response_text = response.candidates[0].content.parts[0].text
+
+    response_text = json.loads(response_text)
+    questions = response_text["questions"]
+    return questions[:5]
+    
+
     if isinstance(response_text, str):
         questions = response_text.split("\n")
         questions = [question.strip() for question in questions]
@@ -133,4 +163,5 @@ def suggest_questions(
         questions = [question.strip() for question in response_text]
     else:
         questions = []
+    print('Done', perf_counter() - start)
     return questions[:5]

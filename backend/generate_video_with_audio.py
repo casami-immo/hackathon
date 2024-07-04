@@ -75,17 +75,17 @@ def get_system_prompt(name_area, desctiption, qa_pairs, max_words=150):
     prefix = f"""
     Role: Expert Real Estate Agent
 
-    Task: Create an engaging {max_words}-word property description based on a video tour and provided Q&A.
+    Task: Create an engaging property description with max {max_words}-word based on a video tour and provided Q&A.
 
     Context:
-    - You're presenting a high-end property to potential buyers
+    - You're presenting a property to potential buyers
     - You have access to a video tour of the building and its surroundings
     - Additional information is provided in a Q&A format
 
     Instructions:
     1. Analyze the video content and Q&A information
     2. Highlight key features of the building and its location
-    3. Craft a compelling {max_words}-word description that:
+    3. Craft a compelling {max_words}-word-max description that:
     - Captures the essence of the property
     - Emphasizes its unique selling points
     - Incorporates relevant details from the Q&A
@@ -99,7 +99,7 @@ def get_system_prompt(name_area, desctiption, qa_pairs, max_words=150):
     - Focus: Property strengths and locational advantages
     - Language: Clear, simple, concise, and persuasive
 
-    Format: Continuous prose, approximately {max_words} words
+    Format: Continuous prose, ideally {max_words} words but don't repeat yourself.
 
     Note: Ensure the description flows naturally and engages potential buyers. Seamlessly integrate information from both the video and Q&A without explicitly referencing their source.
 
