@@ -10,3 +10,4 @@ google-cloud-aiplatform
 pdf2image
 pdfminer-six
 firebase_admin
+opencv-python
