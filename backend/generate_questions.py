@@ -1,5 +1,4 @@
 import base64
-import json
 import os
 from io import BytesIO
 from typing import List
@@ -9,11 +8,9 @@ import google.generativeai as genai
 import requests
 from google.ai import generativelanguage as glm
 from PIL import Image
-import tempfile
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 
-def get_sys_prompt(name_area, qa_pairs):
+def get_sys_prompt(name_area, description, questions):
     prefix = f"""
     Role: AI Assistant for Property Buyers
 
@@ -22,6 +19,7 @@ def get_sys_prompt(name_area, qa_pairs):
 
     Input:
     - {name_area}: The specific area of the property being discussed (e.g., kitchen, living room, garden)
+    - Brief description of the area: {description}
     - Video content: The frames images of video tour of the {name_area}
 
     Task:
@@ -49,7 +47,7 @@ def get_sys_prompt(name_area, qa_pairs):
 
     Example Output:
     """
-    qa_info = f"""{[qa['question'] for qa in qa_pairs]}"""
+    qa_info = f"""{questions}"""
     return prefix + qa_info
 
 
@@ -97,45 +95,9 @@ def read_videos(video_path, fmt="PNG", interval_seconds=1):
     return base64_images, total_frames // fps
 
 
-def generate_questions():
-    questions = []
-    current_dir = os.path.dirname(os.path.realpath(__file__))
-    with open(os.path.join(current_dir, "database/test_data/data.json")) as fp:
-        data = json.load(fp)
-        AREAS = data["properties"]["0"]["areas"]
-        for _, area in AREAS.items():
-            print(f"Generating video for area {area['id']}")
-            video_local_path = f"videos/video_{area['id']}.mp4"
-            download_video(area["video"]["url"], video_local_path)
-
-            base64_images, _ = read_videos(video_local_path)
-            name_area = area["name"]
-            qa_pairs = area["qa"]
-            system_prompt = get_sys_prompt(name_area, qa_pairs)
-            model = genai.GenerativeModel(
-                "gemini-1.5-flash-latest", system_instruction=[system_prompt]
-            )
-            parts = []
-            for image in base64_images:
-                parts.append(glm.Blob(mime_type="image/png", data=image))
-
-            messages = [{"role": "user", "parts": parts}]
-
-            response = model.generate_content(
-                messages, generation_config={"response_mime_type": "application/json"}
-            )
-            response_text = response.candidates[0].content.parts[0].text
-            questions.append(
-                {
-                    "area_id": area["id"],
-                    "area_name": name_area,
-                    "questions": response_text,
-                }
-            )
-    return questions
-
-
-def suggest_questions(name: str, description: str, video_url: str, current_questions: List[str]):
+def suggest_questions(
+    name: str, description: str, video_url: str, current_questions: List[str]
+):
     """
     Generate questions based on the video content and description of the area.
     Args:
@@ -146,18 +108,29 @@ def suggest_questions(name: str, description: str, video_url: str, current_quest
     Returns:
     questions (list(str)): Max 5 generated questions.
     """
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    video_local_path = os.path.join(current_dir, f"/videos/{name}.mp4")
+    download_video(video_url, video_local_path)
+    base64_images, _ = read_videos(video_local_path)
+    system_prompt = get_sys_prompt(name, description, current_questions)
+    model = genai.GenerativeModel(
+        "gemini-1.5-flash-latest", system_instruction=[system_prompt]
+    )
+    parts = []
+    for image in base64_images:
+        parts.append(glm.Blob(mime_type="image/png", data=image))
 
-    # dummy replace with real processing
-    questions = [
-        "What is the condition of the fixtures and appliances in the area?",
-        "Are there any recent renovations or repairs done in the area?",
-        "What are the unique features of the area?",
-        "Are there any potential issues that need to be addressed?",
-        "What are the practical considerations for this area?",
-    ]
-    return questions
+    messages = [{"role": "user", "parts": parts}]
 
-
-if __name__ == "__main__":
-    questions = generate_questions()
-    print(questions)
+    response = model.generate_content(
+        messages, generation_config={"response_mime_type": "application/json"}
+    )
+    response_text = response.candidates[0].content.parts[0].text
+    if isinstance(response_text, str):
+        questions = response_text.split("\n")
+        questions = [question.strip() for question in questions]
+    elif isinstance(response_text, list):
+        questions = [question.strip() for question in response_text]
+    else:
+        questions = []
+    return questions[:5]
