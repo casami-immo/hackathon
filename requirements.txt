@@ -11,3 +11,4 @@ pdf2image
 pdfminer-six
 firebase_admin
 opencv-python
+moviepy
