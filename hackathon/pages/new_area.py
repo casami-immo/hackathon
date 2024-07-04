@@ -6,6 +6,7 @@ from backend.generate_questions import suggest_questions
 from uuid import uuid4
 from pydantic import Field
 
+
 class Question(rx.Base):
     text: str
     id: str
@@ -145,34 +146,47 @@ def upload_zone():
 
 def qa_item(question: Question):
     return rx.chakra.card(
-        rx.chakra.vstack(
-            rx.chakra.hstack(
-                rx.chakra.text("Q:", padding_x="8px", as_="b"),
-                rx.chakra.input(
-                    value=question.text,
-                    on_change=lambda text: AreaState.update_question(question.id, text),
-                    is_disabled=AreaState.generating,
+        rx.chakra.hstack(
+            rx.chakra.vstack(
+                rx.chakra.hstack(
+                    rx.chakra.text("Q:", padding_x="8px", as_="b"),
+                    rx.chakra.input(
+                        value=question.text,
+                        on_change=lambda text: AreaState.update_question(
+                            question.id, text
+                        ),
+                        is_disabled=AreaState.generating,
+                    ),
                 ),
-            ),
-            rx.chakra.hstack(
-                rx.chakra.text("A:", padding_x="8px", as_="b"),
-                rx.chakra.input(
-                    value=question.answer,
-                    on_change=lambda text: AreaState.update_answer(question.id, text),
-                    is_disabled=AreaState.generating,
+                rx.chakra.hstack(
+                    rx.chakra.text("A:", padding_x="8px", as_="b"),
+                    rx.chakra.input(
+                        value=question.answer,
+                        on_change=lambda text: AreaState.update_answer(
+                            question.id, text
+                        ),
+                        is_disabled=AreaState.generating,
+                    ),
                 ),
+                
+                align_items="left",
+                spacing="4px",
+                width="100%",
             ),
             rx.chakra.button(
-                "Delete",
-                bg="red.100",
-                color="white",
-                _hover={"bg": "red.500"},
-                on_click=lambda: AreaState.delete_question(question.id),
-                position="absolute",
-                right="8px",
-            ),
-            align_items="left",
-            spacing="4px",
+                    rx.chakra.icon(tag="delete", size="24px"),
+                    bg="red.100",
+                    color="white",
+                    _hover={"bg": "red.300"},
+                    on_click=lambda: AreaState.delete_question(question.id),
+                    width="40px",
+                    height="40px",
+                    align="right",
+                    # position="absolute",
+                    # right="8px",
+                ),
+            width="100%",
+            height="auto",
         )
     )
 
