@@ -2,13 +2,14 @@ import base64
 import json
 import os
 from io import BytesIO
+from typing import List
 
 import cv2
 import google.generativeai as genai
 import requests
 from google.ai import generativelanguage as glm
 from PIL import Image
-
+import tempfile
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 
@@ -131,6 +132,29 @@ def generate_questions():
                     "questions": response_text,
                 }
             )
+    return questions
+
+
+def suggest_questions(name: str, description: str, video_url: str, current_questions: List[str]):
+    """
+    Generate questions based on the video content and description of the area.
+    Args:
+        name (str): The name of the area.
+        description (str): The description of the area.
+        video_url (str): The URL of the video content.
+        current_questions (list(str)): The current list of questions for the area.
+    Returns:
+    questions (list(str)): Max 5 generated questions.
+    """
+
+    # dummy replace with real processing
+    questions = [
+        "What is the condition of the fixtures and appliances in the area?",
+        "Are there any recent renovations or repairs done in the area?",
+        "What are the unique features of the area?",
+        "Are there any potential issues that need to be addressed?",
+        "What are the practical considerations for this area?",
+    ]
     return questions
 
 

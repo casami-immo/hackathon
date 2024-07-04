@@ -192,7 +192,7 @@ def area_caption():
                         rx.box(width="0px", height="0px"),
                     ),
                     rx.chakra.button(
-                        "Save Area", color="indigo", on_click=AreaCaptionState.save_area
+                        "Save Area", color="blue", on_click=AreaCaptionState.save_area
                     ),
                     padding="4px",
                 ),
