@@ -17,7 +17,7 @@ class AreaCaptionState(rx.State):
     caption: str = ""
     output_file: File = File(filename="", url="")
     # output_video_url: str = ""
-    description: str = ""
+    # description: str = ""
 
     @rx.var
     def output_video_url(self) -> str:
@@ -79,13 +79,11 @@ class AreaCaptionState(rx.State):
         try:
             # update description
             area = self.area.copy()
-            area.description = self.description
+            # area.description = self.description
 
             # Generate the descriptions
             self.caption = ""
-            for chunk in generate_descriptions(
-                area=self.area, video_url=self.video_url
-            ):
+            for chunk in generate_descriptions(area=area, video_url=self.video_url):
                 self.caption += chunk
                 yield
         finally:
@@ -113,15 +111,15 @@ class AreaCaptionState(rx.State):
         """Update the caption."""
         self.caption = caption
 
-    def update_description(self, description):
-        """Update the description."""
-        self.description = description
+    # def update_description(self, description):
+    #     """Update the description."""
+    #     self.description = description
 
     def save_area(self):
         """Save the area."""
         new_area_dict = self.area.dict()
         new_area_dict["video"] = self.output_file.dict()
-        new_area_dict["description"] = self.description
+        # new_area_dict["description"] = self.description
         new_area = Area(**new_area_dict)
         db.update_area(
             self.router.page.params["property_id"],
@@ -140,64 +138,108 @@ def area_caption():
     return apply_layout(
         rx.cond(
             AreaCaptionState.no_area,
-            rx.chakra.heading("Area not found", size="xl", padding="4px"),
+            rx.chakra.heading("Area not found", size="xl", padding="64px"),
             rx.chakra.vstack(
-                rx.chakra.heading("Edit Area Caption", size="2xl", padding="4px"),
+                rx.chakra.heading("Edit Video Guide", size="2xl", padding="4px"),
                 rx.chakra.heading(
-                    "Area: " + AreaCaptionState.area_name, size="lg", padding="4px"
+                    "Area : " + AreaCaptionState.area_name, size="md", padding="4px"
                 ),
-                rx.chakra.heading("Description", size="lg", padding="4px"),
-                rx.text_area(
-                    AreaCaptionState.area_description,
-                    on_change=AreaCaptionState.update_description,
-                    size="3",
-                    width="500px",
-                    height="300px",
+                rx.chakra.text(
+                    "Add automatic caption to make video guide more engaging with more relevant information."
                 ),
-                rx.chakra.heading("Video", size="lg", padding="4px"),
-                rx.video(url=AreaCaptionState.video_url, width="300px", height="300px"),
+                # rx.chakra.heading("Description", size="lg", padding="4px"),
+                # rx.text_area(
+                #     AreaCaptionState.area_description,
+                #     on_change=AreaCaptionState.update_description,
+                #     size="3",
+                #     width="500px",
+                #     height="300px",
+                # ),
+                rx.chakra.hstack(
+                    rx.chakra.vstack(
+                        rx.chakra.heading("Original Video", size="lg", padding="4px"),
+                        rx.video(
+                            url=AreaCaptionState.video_url,
+                            width="600px",
+                            height="300px",
+                        ),
+                    ),
+                    rx.chakra.vstack(
+                        rx.chakra.heading(
+                            "Write caption to the video", size="lg", padding="4px"
+                        ),
+                        rx.text_area(
+                            label="Caption",
+                            name="caption",
+                            placeholder="Write caption here or generate with AI.",
+                            value=AreaCaptionState.caption,
+                            on_change=AreaCaptionState.update_caption,
+                            disabled=AreaCaptionState.generating,
+                            size="3",
+                            width="600px",
+                            height="300px",
+                        ),
+                    ),
+                    rx.chakra.vstack(
+                        rx.chakra.button(
+                            "Generate Caption",
+                            bg="orange.300",
+                            color="white",
+                            is_loading=AreaCaptionState.generating,
+                            on_click=AreaCaptionState.generate_caption,
+                            width="250px",
+                        ),
+                        rx.chakra.button(
+                            "Apply caption to video",
+                            bg="blue.300",
+                            color="white",
+                            is_loading=AreaCaptionState.generating,
+                            on_click=AreaCaptionState.merge_caption_to_video,
+                            width="250px",
+                        ),
+                        spacing="32px",
+                        position="relative",
+                        bottom="0px",
+                    ),
+                    width="100%",
+                    align_items="left",
+                    spacing="64px",
+                ),
                 rx.chakra.vstack(
-                    rx.chakra.heading(
-                        "Add caption to the video", size="lg", padding="4px"
-                    ),
-                    rx.chakra.button(
-                        "Generate Caption",
-                        color_scheme="blue",
-                        is_loading=AreaCaptionState.generating,
-                        on_click=AreaCaptionState.generate_caption,
-                    ),
-                    rx.text_area(
-                        label="Caption",
-                        name="caption",
-                        value=AreaCaptionState.caption,
-                        on_change=AreaCaptionState.update_caption,
-                        disabled=AreaCaptionState.generating,
-                        size="3",
-                        width="500px",
-                        height="300px",
-                    ),
-                    rx.chakra.button(
-                        "Turn into voice commentary",
-                        color_scheme="blue",
-                        is_loading=AreaCaptionState.generating,
-                        on_click=AreaCaptionState.merge_caption_to_video,
-                    ),
+                    rx.chakra.heading("Video with Caption", size="lg", padding="4px"),
                     rx.cond(
                         AreaCaptionState.output_video_url != "",
                         rx.video(
                             url=AreaCaptionState.output_video_url,
-                            width="300px",
+                            width="600px",
                             height="300px",
                         ),
-                        rx.box(width="0px", height="0px"),
+                        rx.chakra.box(
+                            rx.chakra.text("Write caption and apply it to video to create a new version",
+                                           align="center"),
+                            width="600px",
+                            height="300px",
+                            align_items="center",
+                            color="gray.500",
+                            bg="gray.100",
+                        ),
                     ),
-                    rx.chakra.button(
-                        "Save Area", color="blue", on_click=AreaCaptionState.save_area
-                    ),
-                    padding="4px",
+                    align_items="center",
+                    width="600px"
+                ),
+                rx.chakra.button(
+                    "Save Area and Continue",
+                    bg="blue",
+                    color="white",
+                    on_click=AreaCaptionState.save_area,
+                    width="250px",
+                    is_disabled=AreaCaptionState.output_video_url == "",
                 ),
                 width="100%",
-                height="100%",
+                height="auto",
+                align_items="left",
+                padding="64px",
+                spacing="16px"
             ),
         )
     )
