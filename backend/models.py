@@ -7,10 +7,14 @@ from pydantic.v1 import root_validator
 
 
 class File(rx.Base):
-    id: str = str(uuid4())
+    id: str = None
     filename: str
     url: str
 
+    def __init__(self, **kwargs):
+        if kwargs.get("id") is None:
+            kwargs["id"] = str(uuid4())
+        super().__init__(**kwargs)
 
 class QA(rx.Base):
     question: str
@@ -18,11 +22,16 @@ class QA(rx.Base):
 
 
 class Area(rx.Base):
-    id: str = str(uuid4())
+    id: str = None
     name: str = ""
     description: str = ""
     video: File = None
     qa: List[QA] = []
+
+    def __init__(self, **kwargs):
+        if kwargs.get("id") is None:
+            kwargs["id"] = str(uuid4())
+        super().__init__(**kwargs)
 
 
 class CarrezArea(rx.Base):
@@ -72,7 +81,7 @@ class Diagnostics(rx.Base):
 
 
 class Property(rx.Base):
-    id: str = str(uuid4())
+    id: str = None
     name: str = ""
     address: str = ""
     floor: int = 0
@@ -80,3 +89,8 @@ class Property(rx.Base):
     condo_fees: float = None
     diagnostics: Diagnostics = None
     areas: Dict[str, Area] = {}
+
+    def __init__(self, **kwargs):
+        if kwargs.get("id") is None:
+            kwargs["id"] = str(uuid4())
+        super().__init__(**kwargs)
