@@ -5,9 +5,10 @@ from backend.document_processing import extract_data
 from hackathon.components.layout import apply_layout
 from backend.models import Property
 
+
 class FormState(rx.State):
     """The form state."""
-
+    processing : bool = False
     # def handle_submit(self, form_data: dict):
     #     """Handle the form submit."""
     #     property_id = db.new_property(form_data)
@@ -19,6 +20,8 @@ class FormState(rx.State):
         Args:
             files: The uploaded files.
         """
+        self.processing = True
+        yield
         outfiles = []
         for file in files:
             upload_data = await file.read()
@@ -39,24 +42,50 @@ class FormState(rx.State):
         # if not, return error message
         # if saved, redirect to the edit page
         property_check = db.get_property(property_id)
-        return rx.redirect(f"/properties/{property_id}/edit")
+        self.processing = False
+        yield rx.redirect(f"/properties/{property_id}/edit")
+
+def file_card(file: rx.UploadFile) -> rx.Component:
+    return rx.chakra.hstack(
+        rx.icon('circle-check'),
+        rx.chakra.text(file),
+        align_items='center',
+    )
 
 
 def new_property_from_document() -> rx.Component:
     return rx.chakra.form(
         rx.chakra.heading(
-            "Import information from Diagnostics", size="2xl", padding="4px"
+            "Import all the required documents to initialize all information in a minute",
+            size="md",
         ),
-        rx.upload(
-            rx.text("Drag and drop diagnostic files here or click to select files"),
-            id="upload_diag",
-            border="1px dotted rgb(107,99,246)",
-            padding="5em",
-        ),
-        rx.hstack(rx.foreach(rx.selected_files("upload_diag"), rx.text)),
-        rx.chakra.button(
-            "Upload",
-            on_click=FormState.handle_upload(rx.upload_files(upload_id="upload_diag")),
+        rx.chakra.vstack(
+            rx.chakra.text("Required diagnostics: Carrez, DPE, Electricity"),
+            rx.chakra.text("Optional: Taxes, Condo Fees"),
+            rx.upload(
+                rx.text("Drag and drop diagnostic files here or click to select files"),
+                id="upload_diag",
+                border="1px dotted rgb(107,99,246)",
+                padding="5em",
+                disabled=FormState.processing,
+            ),
+            rx.chakra.card(
+                rx.chakra.grid(rx.foreach(rx.selected_files("upload_diag"), file_card)),
+                header="Selected files",
+                height="auto",
+            ),
+            rx.chakra.button(
+                "Upload",
+                on_click=FormState.handle_upload(
+                    rx.upload_files(upload_id="upload_diag")
+                ),
+                is_loading=FormState.processing,
+                bg="indigo",
+                color="white",
+                width="300px"
+            ),
+            align_items="left",
+            spacing="16px",
         ),
         width="50vw",
         height="100%",
@@ -106,11 +135,14 @@ def new_property() -> rx.Component:
     return apply_layout(
         rx.chakra.vstack(
             rx.chakra.heading(
-                "Add new property",
+                "Create new property",
                 size="2xl",
             ),
+            rx.chakra.box(height="32px"),
             # new_property_form(),
             new_property_from_document(),
-            spacing="16px"
+            spacing="16px",
+            align_items="left",
+            padding="32px",
         )
     )
