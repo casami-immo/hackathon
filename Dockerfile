@@ -4,6 +4,7 @@ RUN apt-get -y update && apt-get -y upgrade && apt-get install -y \
     ffmpeg \
     poppler-utils \
     unzip \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
