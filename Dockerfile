@@ -13,6 +13,8 @@ COPY . /app
 
 RUN pip install --no-cache-dir -r requirements.txt
 
+RUN API_URL=http://backend:8000 reflex export --frontend-only && unzip frontend.zip && cp -r frontend /
+
 EXPOSE 3000
 
 CMD ["reflex", "run"]
