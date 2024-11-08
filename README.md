@@ -14,3 +14,7 @@ We aim to reduce physical visit by 70%, at the cost of 1/5th of the current virt
 [Demo video](https://www.loom.com/share/d7576521d1914152a6e24675c3f09df8?sid=b09f4972-ea94-4193-9cc0-96c88d199b73)
 
 
+# About Us
+Casami is a startup based in France, Paris region.  
+We are building the next generation of AI assistant for real estate.
+VISIT US Here : https://www.casami.immo
